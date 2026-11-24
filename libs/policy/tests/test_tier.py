@@ -2,8 +2,9 @@
 
 from datetime import date
 
-from studio.contracts.app import AppManifest, ConnectorUse
+from studio.contracts.app import AppManifest
 from studio.contracts.common import AccessMode, Audience, DataClassification
+from studio.contracts.version import CONTRACT_VERSION
 from studio.policy.tier import decide_tier
 
 CLASSIFICATIONS: dict[str, DataClassification] = {
@@ -17,15 +18,12 @@ CLASSIFICATIONS: dict[str, DataClassification] = {
 def app(audience: Audience = "personal", **connectors: AccessMode) -> AppManifest:
     """An app using the given connectors, written with underscores: stores_readonly="read"."""
     return AppManifest(
-        contract_version="1.0.0",
+        contract_version=CONTRACT_VERSION,
         name="staff-requests",
         owner="00u1a2b3c4D5E6F7g8h9",
         domain="retail",
         project_type="form-workflow",
-        connectors=[
-            ConnectorUse(id=name.replace("_", "-"), access=access)
-            for name, access in connectors.items()
-        ],
+        connectors={name.replace("_", "-"): access for name, access in connectors.items()},
         audience=audience,
         expires_on=date(2027, 6, 30),
     )
@@ -85,3 +83,13 @@ def test_every_rule_that_applies_gives_its_reason() -> None:
 
     assert decision.tier == 3
     assert len(decision.reasons) == 3
+
+
+def test_any_classification_but_internal_is_treated_as_sensitive() -> None:
+    # The classifications come from a domain pack's YAML file, so nothing guarantees their values.
+    for label in ("confidential", "Client", "INTERNAL", ""):
+        classifications = {"stores-readonly": label}
+
+        decision = decide_tier(app("personal", stores_readonly="read"), classifications)
+
+        assert decision.tier == 3, label

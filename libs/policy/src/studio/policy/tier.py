@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from pydantic import BaseModel, ConfigDict
 
 from studio.contracts.app import AppManifest
-from studio.contracts.common import DataClassification, RiskTier
+from studio.contracts.common import ConnectorId, RiskTier
 
 
 class TierDecision(BaseModel):
@@ -25,28 +25,30 @@ class TierDecision(BaseModel):
     """Why the app has this tier, in plain words."""
 
 
-def _critical_reasons(
-    app: AppManifest, classifications: Mapping[str, DataClassification]
-) -> list[str]:
+def _critical_reasons(app: AppManifest, classifications: Mapping[ConnectorId, str]) -> list[str]:
     reasons: list[str] = []
-    for connector in app.connectors:
-        # A connector missing from the classifications is unknown: fail safe.
-        classification = classifications.get(connector.id, "unknown")
+    for connector, access in app.connectors.items():
+        # Fail safe: anything but `internal`, including a missing or misspelled label, is sensitive.
+        classification = classifications.get(connector)
         if classification == "client":
-            reasons.append(f"It reads client data from {connector.id}.")
-        elif classification == "unknown":
+            reasons.append(f"It reads client data from {connector}.")
+        elif classification != "internal":
             reasons.append(
-                f"The data in {connector.id} isn't classified, so it's treated as sensitive."
+                f"The data in {connector} has no known classification, "
+                "so it's treated as sensitive."
             )
-        if connector.access == "write":
-            reasons.append(f"It writes to {connector.id}.")
+        if access == "write":
+            reasons.append(f"It writes to {connector}.")
     return reasons
 
 
-def decide_tier(
-    app: AppManifest, classifications: Mapping[str, DataClassification]
-) -> TierDecision:
-    """The app's tier, from its `app.yaml` and the data classification of each connector."""
+def decide_tier(app: AppManifest, classifications: Mapping[ConnectorId, str]) -> TierDecision:
+    """The app's tier, from its `app.yaml` and the data classification of each connector.
+
+    `classifications` comes from the domain pack (step 11), later from Dataplex (step 26). Only
+    `internal` counts as non-sensitive: `client`, `unknown`, a missing connector or any other
+    label gives tier 3.
+    """
     shared = (
         [f"It's shared beyond its author ({app.audience})."] if app.audience != "personal" else []
     )

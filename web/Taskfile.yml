@@ -13,6 +13,18 @@ tasks:
     cmds:
       - npm ci --no-audit --no-fund
 
+  dev:
+    desc: Start the Vite dev server with hot reload
+    deps: [install]
+    cmds:
+      - npm run dev
+
+  preview:
+    desc: Serve the production build locally
+    deps: [build]
+    cmds:
+      - npm run preview
+
   lint:
     desc: Lint and type-check the web code
     deps: [install]

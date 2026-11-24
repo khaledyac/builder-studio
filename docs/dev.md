@@ -85,7 +85,7 @@ To change a contract, which only a step that says so may do:
 
 If you forget step 3, `task contracts-check` fails in CI. [ADR 0002](adr/0002-contracts-and-versioning.md) has the rules, including how to ship a breaking change.
 
-The risk tier comes from `studio.policy.tier.decide_tier(app, classifications)`. It follows the table in architecture §8 and fails safe: data with an unknown classification gives tier 3.
+The risk tier comes from `studio.policy.tier.decide_tier(app, classifications)`. It follows the table in architecture §8, and fails safe: any classification other than `internal`, including a missing one, gives tier 3.
 
 ## Git hooks
 

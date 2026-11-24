@@ -34,7 +34,9 @@ Two kinds of contract aren't versioned per message:
 - **UI events:** the platform API and the web UI ship together.
 - **Workspace API calls:** the OpenAPI document's `info.version` is the API's version.
 
-**Readers are tolerant.** Unknown fields are ignored. That lets a newer minor version add fields without breaking older readers.
+**Readers are tolerant, except of `need.yml` and `app.yaml`.** Unknown fields are ignored, so a newer minor version can add fields without breaking older readers. `need.yml` and `app.yaml` are the exception: people and agents edit them by hand, and ignoring a misspelled key could hide data access and lower the risk tier. An unknown key there is an error, so even an additive change to those two ships readers before writers.
+
+**The generated files enforce the same rules as the models.** Some rules are checked in code, such as the major version and paths staying inside the repo. They also appear in the generated schemas, as patterns. `task contracts-check` runs every example through both the models and the generated files, so the two can't disagree.
 
 ## How to change a contract
 

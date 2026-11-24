@@ -1,0 +1,78 @@
+[project]
+name = "builder-studio"
+version = "0.0.0"
+description = "Builder Studio platform monorepo: one uv workspace for every service and lib."
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+
+[dependency-groups]
+dev = [
+  "httpx2>=2.16.2", # FastAPI's TestClient
+  "pip-audit>=2.10.1",
+  "pre-commit>=4.7.0",
+  "pyright[nodejs]>=1.1.414",
+  "pytest>=9.2.0",
+  "ruff>=0.17.6",
+]
+
+[tool.uv]
+# The root only groups the workspace and the dev tools; it is not a package.
+package = false
+required-version = ">=0.13.9"
+
+[tool.uv.workspace]
+# One package per lib, service and job. Step 02 adds `contracts`, step 13 the workspace API.
+members = ["libs/*", "services/*", "jobs/*"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+# Python only: the shipped Markdown in docs/plan, docs/agents and .claude stays untouched.
+include = ["*.py", "*.pyi", "**/pyproject.toml"]
+extend-exclude = [".claude", "web"]
+
+[tool.ruff.lint]
+select = [
+  "ANN",     # type hints everywhere
+  "B",       # likely bugs
+  "C90",     # complexity
+  "E",
+  "F",
+  "I",       # import order
+  "PLR0915", # too many statements
+  "PT",      # pytest style
+  "RUF",
+  "S",       # security
+  "SIM",
+  "UP",
+  "W",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["studio"]
+
+[tool.ruff.lint.mccabe]
+# AGENTS.md: complexity under 10.
+max-complexity = 9
+
+[tool.ruff.lint.pylint]
+# AGENTS.md: under 40 statements per function.
+max-statements = 39
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101"]
+"tests/tooling/**" = ["S101", "S603", "S607"]
+
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+# Everything in the repo except hidden folders (.venv, .claude) and the web app.
+exclude = ["**/.*", "**/__pycache__", "**/node_modules", "web"]
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+# `task test` runs these. `tests/tooling` runs in `task secrets` because it builds gitleaks.
+testpaths = ["libs", "services", "jobs"]
+addopts = ["--import-mode=importlib", "-ra", "--strict-markers", "--strict-config"]
+xfail_strict = true

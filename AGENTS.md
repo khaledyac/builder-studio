@@ -26,12 +26,13 @@ You are helping build **Builder Studio**, an internal vibe coding platform. Busi
 
 ```
 contracts/      Pydantic models, plus the JSON Schemas, OpenAPI and TypeScript types generated from them
-libs/           shared Python packages: common, policy, tasks, trustlayer, harness, github
+libs/           shared Python packages, imported as studio.<name>: common, policy, tasks, trustlayer, harness, github
 services/       platform-api, agent-service, session-manager, preview-proxy, registry-api, webhook-receiver
 jobs/           review-runner, eval-runner (Cloud Run jobs)
 workspace/      workspace image and workspace API
 web/            Builder Studio UI
 infra/          terraform/modules (hub, edge, spoke), terraform/envs (hub-dev, hub-prod, spoke-<domain>)
+tests/          tests of the repo's own tooling, such as the secret-scanner self-test
 .github/        this repo's CI and the platform delivery pipeline
 .claude/skills/ the skills code assistants use: shipped with the plan, then kept current by builder-kit's agents layer (never edit them here)
 docs/           architecture.md, adr/, plan/, agents/, dev.md
@@ -57,6 +58,7 @@ Everything the app repos use lives in a second repository, `builder-kit`, create
 - `task test`, `task lint`, `task fmt`.
 - `task contracts-check` regenerates the schemas and types from the Pydantic models and fails on any drift.
 - `task tf-validate` runs fmt, validate and the security scan on Terraform.
+- `task setup` installs the dependencies and the git hooks. `task secrets` and `task audit` run the secret scan and the dependency audit, as CI does.
 - `task --list` shows every task.
 
 ## Agent skills

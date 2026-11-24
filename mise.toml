@@ -1,0 +1,8 @@
+# Tool versions for this repo. CI installs exactly these with mise.
+# Locally, mise is optional: uv, Task, Node and Docker are all you need.
+[tools]
+python = "3.14.6"     # keep in step with .python-version
+uv = "0.13.9"
+task = "3.54.0"
+node = "24.22.3"
+terraform = "1.17.2"  # keep in step with the terraform-fmt hook in .pre-commit-config.yaml

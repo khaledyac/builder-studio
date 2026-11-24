@@ -1,0 +1,89 @@
+# Every command, locally and in CI. `task --list` shows them all.
+version: "3"
+
+includes:
+  web:
+    taskfile: ./web/Taskfile.yml
+    dir: ./web
+
+vars:
+  # Locked versions, with every workspace package installed.
+  UV_RUN: uv run --all-packages --locked
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    silent: true
+
+  install:
+    desc: Install the Python and web dependencies from the lockfiles
+    run: once
+    cmds:
+      - uv sync --all-packages --locked
+      - task: web:install
+
+  setup:
+    desc: Install the dependencies and the git hooks (run once after cloning)
+    cmds:
+      - task: install
+      - "{{.UV_RUN}} pre-commit install --install-hooks"
+
+  dev:
+    desc: Start the local stack
+    cmds:
+      - echo "No local stack yet. Step 03 adds it."
+
+  dev-down:
+    desc: Stop the local stack
+    cmds:
+      - echo "No local stack yet. Step 03 adds it."
+
+  fmt:
+    desc: Format and auto-fix the Python and web code
+    deps: [install]
+    cmds:
+      - "{{.UV_RUN}} ruff format ."
+      - "{{.UV_RUN}} ruff check --fix ."
+      - task: web:fmt
+
+  lint:
+    desc: Lint and type-check the Python and web code
+    deps: [install]
+    cmds:
+      - "{{.UV_RUN}} ruff check ."
+      - "{{.UV_RUN}} ruff format --check ."
+      - "{{.UV_RUN}} pyright"
+      - task: web:lint
+
+  test:
+    desc: Run the Python and web tests
+    deps: [install]
+    cmds:
+      - "{{.UV_RUN}} pytest"
+      - task: web:test
+
+  contracts-check:
+    desc: Regenerate the schemas and types from the Pydantic contracts and fail on drift
+    cmds:
+      - echo "No contracts yet. Step 02 adds them."
+
+  tf-validate:
+    desc: Run fmt, validate and the security scan on the Terraform
+    cmds:
+      - echo "No Terraform yet. Step 06 adds infra/terraform."
+
+  secrets:
+    desc: Check that the secret scanners catch a fake secret, then scan the whole git history
+    deps: [install]
+    cmds:
+      - "{{.UV_RUN}} pytest tests/tooling"
+      - "{{.UV_RUN}} pre-commit run gitleaks-history --hook-stage manual"
+
+  audit:
+    desc: Check the Python and npm dependencies for known vulnerabilities
+    deps: [install]
+    set: [pipefail]
+    cmds:
+      - uv export --all-packages --locked --no-emit-workspace --no-hashes --format requirements.txt --quiet | {{.UV_RUN}} pip-audit --strict --disable-pip --no-deps --requirement /dev/stdin
+      - task: web:audit

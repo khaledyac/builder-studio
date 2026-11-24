@@ -1,4 +1,4 @@
-/* Builder Studio contracts 1.0.0. Generated from the JSON Schemas: edit the Pydantic models, then run task contracts-gen. */
+/* Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen. */
 
 export type Event =
   | SessionStarted
@@ -22,6 +22,7 @@ export type SessionId = string;
 export type BranchName = string;
 export type CommitSha = string;
 export type Environment = "lab" | "staging" | "production";
+export type Semver = string;
 export type ReviewKind = "domain-owner" | "engineer" | "security" | "dpo" | "legal";
 
 export interface SessionStarted {
@@ -30,6 +31,9 @@ export interface SessionStarted {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "session.started";
   data: SessionData;
@@ -51,6 +55,9 @@ export interface SessionReady {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "session.ready";
   data: SessionData;
@@ -61,6 +68,9 @@ export interface SessionIdle {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "session.idle";
   data: SessionData;
@@ -71,6 +81,9 @@ export interface SessionDeleted {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "session.deleted";
   data: SessionData;
@@ -81,6 +94,9 @@ export interface IntakeConfirmed {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "intake.confirmed";
   data: SessionData;
@@ -91,6 +107,9 @@ export interface PlanApproved {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "plan.approved";
   data: SessionData;
@@ -101,6 +120,9 @@ export interface TicketUpdated {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "ticket.updated";
   data: TicketData;
@@ -116,6 +138,9 @@ export interface MergeDone {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "merge.done";
   data: MergeData;
@@ -131,6 +156,9 @@ export interface PreviewRefreshed {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "preview.refreshed";
   data: PreviewData;
@@ -145,6 +173,9 @@ export interface PublishRequested {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "publish.requested";
   data: SessionData;
@@ -155,6 +186,9 @@ export interface CheckCompleted {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "check.completed";
   data: CheckData;
@@ -162,7 +196,7 @@ export interface CheckCompleted {
 export interface CheckData {
   app_id: AppId;
   name: string;
-  conclusion: "success" | "failure" | "neutral" | "cancelled" | "skipped" | "timed_out" | "action_required";
+  conclusion: "success" | "failure" | "neutral" | "cancelled" | "skipped" | "timed_out" | "action_required" | "stale";
 }
 export interface DeployCompleted {
   specversion?: "1.0";
@@ -170,6 +204,9 @@ export interface DeployCompleted {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "deploy.completed";
   data: DeployData;
@@ -177,7 +214,7 @@ export interface DeployCompleted {
 export interface DeployData {
   app_id: AppId;
   environment: Environment;
-  version: string;
+  version: Semver;
   outcome: "success" | "failure";
 }
 export interface ReviewRequested {
@@ -186,6 +223,9 @@ export interface ReviewRequested {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "review.requested";
   data: ReviewRequestData;
@@ -200,6 +240,9 @@ export interface ReviewCompleted {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "review.completed";
   data: ReviewResultData;
@@ -215,6 +258,9 @@ export interface BudgetExceeded {
   source: string;
   time: string;
   datacontenttype?: "application/json";
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contractversion: string;
   type: "budget.exceeded";
   data: BudgetData;

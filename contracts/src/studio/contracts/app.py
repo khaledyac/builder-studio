@@ -3,17 +3,18 @@
 from datetime import date
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, Field, StringConstraints
+from pydantic import Field, StringConstraints
 
 from studio.contracts.common import (
+    SLUG,
     AccessMode,
     AppId,
     Audience,
     ConnectorId,
-    Contract,
     DomainId,
     ProjectType,
     RiskTier,
+    StrictContract,
     UserId,
 )
 from studio.contracts.version import ContractVersion
@@ -24,32 +25,19 @@ type ApprovedModule = Literal[
 """The approved Terraform modules an app's resources come from."""
 
 
-class ConnectorUse(Contract):
-    id: ConnectorId
-    access: AccessMode
-
-
-class Resource(Contract):
+class Resource(StrictContract):
     module: ApprovedModule
-    name: Annotated[str, StringConstraints(pattern=r"^[a-z]([a-z0-9-]*[a-z0-9])?$", max_length=40)]
+    name: Annotated[str, StringConstraints(pattern=SLUG, max_length=40)]
 
 
-def _one_use_per_connector(connectors: list[ConnectorUse]) -> list[ConnectorUse]:
-    ids = [connector.id for connector in connectors]
-    if len(set(ids)) != len(ids):
-        raise ValueError("each connector can be listed once")
-    return connectors
-
-
-class AppManifest(Contract):
+class AppManifest(StrictContract):
     contract_version: ContractVersion
     name: AppId
     owner: UserId
     domain: DomainId
     project_type: ProjectType
-    connectors: Annotated[list[ConnectorUse], AfterValidator(_one_use_per_connector)] = Field(
-        default_factory=list[ConnectorUse]
-    )
+    connectors: dict[ConnectorId, AccessMode] = Field(default_factory=dict[ConnectorId, AccessMode])
+    """Each connector the app uses, with its access mode: one entry per connector."""
     resources: list[Resource] = Field(default_factory=list[Resource])
     audience: Audience
     risk_tier: Annotated[RiskTier | None, Field(json_schema_extra={"readOnly": True})] = None

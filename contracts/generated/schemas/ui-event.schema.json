@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
   "title": "UiEvent",
   "$defs": {
     "Cost": {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
   "title": "MergeDone",
   "$defs": {
     "AppId": {
@@ -93,7 +93,8 @@
       "type": "string"
     },
     "contractversion": {
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "The contracts version it was written with. Readers accept 1.x.",
+      "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
       "type": "string"
     },
     "type": {

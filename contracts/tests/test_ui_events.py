@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from pydantic import TypeAdapter
 
 from studio.contracts.ui_events import UI_EVENTS, QuestionCard, UiEvent
@@ -31,3 +34,10 @@ def test_a_ui_event_is_parsed_into_the_model_for_its_type() -> None:
 
     assert isinstance(event, QuestionCard)
     assert event.suggested_answers[0] == "Just me"
+
+
+def test_every_ui_event_type_has_a_valid_example() -> None:
+    examples = Path(__file__).resolve().parents[1] / "examples" / "ui-event" / "valid"
+    covered = {json.loads(path.read_text())["type"] for path in examples.glob("*.json")}
+
+    assert covered == set(UI_EVENTS)

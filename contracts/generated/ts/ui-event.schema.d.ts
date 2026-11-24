@@ -1,4 +1,4 @@
-/* Builder Studio contracts 1.0.0. Generated from the JSON Schemas: edit the Pydantic models, then run task contracts-gen. */
+/* Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen. */
 
 export type UiEvent = Message | QuestionCard | SummaryCard | PlanCard | Status | PreviewRefresh | Cost;
 export type Line = string;

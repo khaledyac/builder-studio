@@ -68,15 +68,14 @@ tasks:
     deps: [install]
     vars:
       OUT: '{{.OUT | default "contracts/generated"}}'
-      CONTRACT_VERSION:
-        sh: uv run --all-packages --locked python -c "from studio.contracts.version import CONTRACT_VERSION; print(CONTRACT_VERSION)"
+      BANNER:
+        sh: '{{.UV_RUN}} python -c "from studio.contracts.export import TS_BANNER; print(TS_BANNER)"'
     cmds:
       - rm -rf {{.OUT}}
       - "{{.UV_RUN}} python -m studio.contracts.export {{.OUT}}"
       - >-
         web/node_modules/.bin/json2ts --input {{.OUT}}/schemas --output {{.OUT}}/ts
-        --no-additionalProperties --unknownAny
-        --bannerComment "/* Builder Studio contracts {{.CONTRACT_VERSION}}. Generated from the JSON Schemas: edit the Pydantic models, then run task contracts-gen. */"
+        --no-additionalProperties --unknownAny --bannerComment "{{.BANNER}}"
       - web/node_modules/.bin/tsc --noEmit --strict {{.OUT}}/ts/*.ts
 
   contracts-check:

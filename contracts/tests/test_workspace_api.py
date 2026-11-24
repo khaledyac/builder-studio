@@ -1,11 +1,10 @@
 import json
 from collections.abc import AsyncIterator
-from datetime import UTC, datetime
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from pydantic import AnyHttpUrl
+from pydantic import AnyHttpUrl, SecretStr
 
 from studio.contracts.version import CONTRACT_VERSION
 from studio.contracts.workspace_api import (
@@ -28,6 +27,7 @@ from studio.contracts.workspace_api import (
     PreviewStatus,
     Push,
     PushResult,
+    Readiness,
     Restore,
     RunCommand,
     WorkspaceApi,
@@ -40,8 +40,8 @@ from studio.contracts.workspace_api import (
 SHA = "a" * 40
 RUNNING = PreviewStatus(state="running", url=AnyHttpUrl("https://preview.example/s-7f3a9c/"))
 
-# The operations listed in step 02, plus the three that steps 13 and 14 need:
-# draft, git_set_token and preview_stop.
+# The operations listed in step 02, plus the four that steps 13 and 14 need:
+# draft, git_set_token, preview_stop and readiness.
 EXPECTED_OPERATIONS = {
     "run_command",
     "read_file",
@@ -62,6 +62,7 @@ EXPECTED_OPERATIONS = {
     "bootstrap",
     "restore",
     "health",
+    "readiness",
 }
 
 
@@ -70,6 +71,7 @@ class FakeWorkspace:
 
     def __init__(self) -> None:
         self.calls: list[tuple[str, object]] = []
+        self.ready = Readiness(ready=True)
 
     async def run_command(self, command: RunCommand) -> AsyncIterator[CommandEvent]:
         self.calls.append(("run_command", command))
@@ -134,6 +136,9 @@ class FakeWorkspace:
     async def restore(self, restore: Restore) -> PreviewStatus:
         self.calls.append(("restore", restore))
         return RUNNING
+
+    async def readiness(self) -> Readiness:
+        return self.ready
 
 
 @pytest.fixture
@@ -200,15 +205,34 @@ def test_calls_reach_the_workspace_with_typed_bodies(
     ]
 
 
-def test_the_github_token_is_never_shown(client: TestClient, workspace: FakeWorkspace) -> None:
+def test_the_github_token_reaches_the_workspace_but_is_never_shown(
+    client: TestClient, workspace: FakeWorkspace
+) -> None:
+    token = GitToken(token=SecretStr("not-a-real-token"))
+
     response = client.put(
         "/git/token",
-        json={"token": "not-a-real-token", "expires_at": datetime.now(UTC).isoformat()},
+        content=token.model_dump_json(),
+        headers={"content-type": "application/json"},
     )
 
-    (_, token) = workspace.calls[0]
+    (_, received) = workspace.calls[0]
     assert response.status_code == 204
-    assert "not-a-real-token" not in repr(token)
+    assert isinstance(received, GitToken)
+    assert received.token.get_secret_value() == "not-a-real-token"
+    assert "not-a-real-token" not in repr(received)
+
+
+def test_readiness_answers_503_until_the_workspace_is_ready(
+    client: TestClient, workspace: FakeWorkspace
+) -> None:
+    workspace.ready = Readiness(ready=False, detail="Installing dependencies")
+    starting = client.get("/ready")
+    workspace.ready = Readiness(ready=True)
+    ready = client.get("/ready")
+
+    assert (starting.status_code, starting.json()["detail"]) == (503, "Installing dependencies")
+    assert ready.status_code == 200
 
 
 def test_health_needs_no_workspace_call(client: TestClient, workspace: FakeWorkspace) -> None:

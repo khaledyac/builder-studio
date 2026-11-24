@@ -4,7 +4,7 @@
 `contractversion` extension attribute carries the contracts version the event was written with.
 """
 
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Literal
 
 from pydantic import AwareDatetime, Field, PositiveInt, StringConstraints
 
@@ -15,8 +15,9 @@ from studio.contracts.common import (
     CommitSha,
     Contract,
     Environment,
+    by_type,
 )
-from studio.contracts.version import ContractVersion
+from studio.contracts.version import ContractVersion, Semver
 
 
 class CloudEvent(Contract):
@@ -57,14 +58,21 @@ class CheckData(Contract):
     app_id: AppId
     name: Annotated[str, StringConstraints(min_length=1, max_length=100)]
     conclusion: Literal[
-        "success", "failure", "neutral", "cancelled", "skipped", "timed_out", "action_required"
+        "success",
+        "failure",
+        "neutral",
+        "cancelled",
+        "skipped",
+        "timed_out",
+        "action_required",
+        "stale",
     ]
 
 
 class DeployData(Contract):
     app_id: AppId
     environment: Environment
-    version: Annotated[str, StringConstraints(pattern=r"^\d+\.\d+\.\d+$")]
+    version: Semver
     outcome: Literal["success", "failure"]
 
 
@@ -181,8 +189,5 @@ type AnyEvent = (
 )
 type Event = Annotated[AnyEvent, Field(discriminator="type")]
 
-EVENTS: dict[str, type[CloudEvent]] = {
-    get_args(model.model_fields["type"].annotation)[0]: model
-    for model in get_args(AnyEvent.__value__)
-}
+EVENTS: dict[str, type[Contract]] = by_type(AnyEvent)
 """Every event model, by its CloudEvents `type`."""

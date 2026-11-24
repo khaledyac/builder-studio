@@ -5,22 +5,25 @@ The router below is the contract. Step 13 serves it with a real `WorkspaceApi`:
     app.state.workspace = MyWorkspace()
     app.include_router(router)
 
-so the served OpenAPI matches `openapi()` by construction. Paths are relative to the repo root.
+so the served OpenAPI matches `openapi()` by construction. The router serves `/health` and
+`/ready` itself, so don't also mount `studio.common`'s health router. Paths are relative to the
+repo root.
 """
 
 from collections.abc import AsyncIterator
 from pathlib import PurePosixPath
 from typing import Annotated, Any, Literal, Protocol, cast
 
-from fastapi import APIRouter, Depends, FastAPI, Request
+from fastapi import APIRouter, Depends, FastAPI, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import (
     AfterValidator,
     AnyHttpUrl,
-    AwareDatetime,
     Field,
     SecretStr,
     StringConstraints,
+    WithJsonSchema,
+    field_serializer,
 )
 
 from studio.contracts.app import AppManifest
@@ -39,8 +42,22 @@ def _inside_repo(path: str) -> str:
     return path
 
 
+REPO_PATH_PATTERN = r"^(?!/)(?!(?:.*/)?\.\.(?:/|$))[^\\\x00]+$"
+"""The same rule as `_inside_repo`, for the generated schema: relative, no `..`, no backslash."""
+
 RepoPath = Annotated[
-    str, StringConstraints(min_length=1, max_length=500), AfterValidator(_inside_repo)
+    str,
+    StringConstraints(min_length=1, max_length=500),
+    AfterValidator(_inside_repo),
+    WithJsonSchema(
+        {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "pattern": REPO_PATH_PATTERN,
+            "description": "A path relative to the repository root, without `..`.",
+        }
+    ),
 ]
 WorktreeName = Annotated[str, StringConstraints(pattern=r"^[a-z]([a-z0-9-]*[a-z0-9])?$")]
 
@@ -95,8 +112,7 @@ class GitStatus(Contract):
 
 class Commit(Contract):
     message: Annotated[str, StringConstraints(min_length=1, max_length=2000)]
-    paths: list[RepoPath] | None = None
-    """The paths to commit. None commits every change."""
+    """Commits every change in the working copy."""
 
 
 class CommitResult(Contract):
@@ -105,7 +121,7 @@ class CommitResult(Contract):
 
 class CreateBranch(Contract):
     name: BranchName
-    start_point: BranchName = "HEAD"
+    """Created from the current branch."""
 
 
 class AddWorktree(Contract):
@@ -141,15 +157,27 @@ class PushResult(Contract):
 
 
 class GitToken(Contract):
-    """A short-lived GitHub token. The workspace keeps it in memory only."""
+    """A short-lived GitHub token. The workspace keeps it in memory only.
+
+    Its repr stays masked, but its JSON carries the real value: sending it is the point.
+    """
 
     token: SecretStr
-    expires_at: AwareDatetime
+
+    @field_serializer("token", when_used="json")
+    def reveal_token(self, token: SecretStr) -> str:
+        return token.get_secret_value()
 
 
 class PreviewStatus(Contract):
     state: Literal["starting", "running", "stopped", "failed"]
     url: AnyHttpUrl | None = None
+
+
+class Readiness(Contract):
+    ready: bool
+    detail: Annotated[str, StringConstraints(max_length=500)] | None = None
+    """What it's still doing, such as installing dependencies."""
 
 
 class Draft(Contract):
@@ -176,14 +204,14 @@ class WorkspaceApi(Protocol):
     """What a workspace implements. Step 13 provides the real one."""
 
     def run_command(self, command: RunCommand) -> AsyncIterator[CommandEvent]: ...
-    async def read_file(self, path: str) -> FileContent: ...
+    async def read_file(self, path: RepoPath) -> FileContent: ...
     async def write_file(self, file: WriteFile) -> None: ...
-    async def list_files(self, path: str) -> FileList: ...
+    async def list_files(self, path: RepoPath) -> FileList: ...
     async def git_status(self) -> GitStatus: ...
     async def git_commit(self, commit: Commit) -> CommitResult: ...
     async def git_create_branch(self, branch: CreateBranch) -> None: ...
     async def git_add_worktree(self, worktree: AddWorktree) -> Worktree: ...
-    async def git_remove_worktree(self, name: str) -> None: ...
+    async def git_remove_worktree(self, name: WorktreeName) -> None: ...
     async def git_merge(self, merge: Merge) -> MergeResult: ...
     async def git_push(self, push: Push) -> PushResult: ...
     async def git_set_token(self, token: GitToken) -> None: ...
@@ -193,6 +221,7 @@ class WorkspaceApi(Protocol):
     async def draft(self, draft: Draft) -> PreviewStatus: ...
     async def bootstrap(self, bootstrap: Bootstrap) -> PreviewStatus: ...
     async def restore(self, restore: Restore) -> PreviewStatus: ...
+    async def readiness(self) -> Readiness: ...
 
 
 def _workspace(request: Request) -> WorkspaceApi:
@@ -319,6 +348,18 @@ async def restore(restore: Restore, workspace: Workspace) -> PreviewStatus:
 @router.get("/health", operation_id="health")
 async def health() -> HealthStatus:
     return HealthStatus(service="workspace")
+
+
+@router.get(
+    "/ready",
+    operation_id="readiness",
+    responses={503: {"model": Readiness, "description": "Not ready yet."}},
+)
+async def readiness(workspace: Workspace, response: Response) -> Readiness:
+    status = await workspace.readiness()
+    if not status.ready:
+        response.status_code = 503
+    return status
 
 
 def openapi() -> dict[str, Any]:

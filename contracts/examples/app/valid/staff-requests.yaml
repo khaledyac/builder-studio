@@ -4,8 +4,7 @@ owner: 00u1a2b3c4D5E6F7g8h9
 domain: retail
 project_type: form-workflow
 connectors:
-  - id: stores-readonly
-    access: read
+  stores-readonly: read
 resources:
   - module: firestore
     name: requests

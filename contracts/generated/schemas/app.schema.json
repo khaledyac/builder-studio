@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
   "title": "AppManifest",
   "$defs": {
     "AccessMode": {
@@ -38,22 +38,6 @@
       "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
       "type": "string"
     },
-    "ConnectorUse": {
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/ConnectorId"
-        },
-        "access": {
-          "$ref": "#/$defs/AccessMode"
-        }
-      },
-      "required": [
-        "id",
-        "access"
-      ],
-      "title": "ConnectorUse",
-      "type": "object"
-    },
     "DomainId": {
       "maxLength": 20,
       "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
@@ -70,6 +54,7 @@
       "type": "string"
     },
     "Resource": {
+      "additionalProperties": false,
       "properties": {
         "module": {
           "$ref": "#/$defs/ApprovedModule"
@@ -100,9 +85,11 @@
       "type": "string"
     }
   },
+  "additionalProperties": false,
   "properties": {
     "contract_version": {
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "The contracts version it was written with. Readers accept 1.x.",
+      "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
       "type": "string"
     },
     "name": {
@@ -118,10 +105,13 @@
       "$ref": "#/$defs/ProjectType"
     },
     "connectors": {
-      "items": {
-        "$ref": "#/$defs/ConnectorUse"
+      "additionalProperties": {
+        "$ref": "#/$defs/AccessMode"
       },
-      "type": "array"
+      "propertyNames": {
+        "$ref": "#/$defs/ConnectorId"
+      },
+      "type": "object"
     },
     "resources": {
       "items": {

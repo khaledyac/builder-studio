@@ -72,6 +72,8 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 500,
+              "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+              "description": "A path relative to the repository root, without `..`.",
               "title": "Path"
             }
           }
@@ -142,6 +144,8 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 500,
+              "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+              "description": "A path relative to the repository root, without `..`.",
               "default": ".",
               "title": "Path"
             }
@@ -621,6 +625,34 @@
           }
         }
       }
+    },
+    "/ready": {
+      "get": {
+        "summary": "Readiness",
+        "operationId": "readiness",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Not ready yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Readiness"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -659,8 +691,9 @@
         "properties": {
           "contract_version": {
             "type": "string",
-            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
-            "title": "Contract Version"
+            "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "title": "Contract Version",
+            "description": "The contracts version it was written with. Readers accept 1.x."
           },
           "name": {
             "$ref": "#/components/schemas/AppId"
@@ -675,10 +708,13 @@
             "$ref": "#/components/schemas/ProjectType"
           },
           "connectors": {
-            "items": {
-              "$ref": "#/components/schemas/ConnectorUse"
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AccessMode"
             },
-            "type": "array",
+            "propertyNames": {
+              "$ref": "#/components/schemas/ConnectorId"
+            },
+            "type": "object",
             "title": "Connectors"
           },
           "resources": {
@@ -708,6 +744,7 @@
             "title": "Expires On"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "contract_version",
@@ -818,22 +855,6 @@
             "maxLength": 2000,
             "minLength": 1,
             "title": "Message"
-          },
-          "paths": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string",
-                  "maxLength": 500,
-                  "minLength": 1
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Paths"
           }
         },
         "type": "object",
@@ -870,30 +891,10 @@
         "type": "array",
         "uniqueItems": true
       },
-      "ConnectorUse": {
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/ConnectorId"
-          },
-          "access": {
-            "$ref": "#/components/schemas/AccessMode"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "access"
-        ],
-        "title": "ConnectorUse"
-      },
       "CreateBranch": {
         "properties": {
           "name": {
             "$ref": "#/components/schemas/BranchName"
-          },
-          "start_point": {
-            "$ref": "#/components/schemas/BranchName",
-            "default": "HEAD"
           }
         },
         "type": "object",
@@ -926,7 +927,9 @@
             "type": "string",
             "maxLength": 500,
             "minLength": 1,
-            "title": "Path"
+            "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+            "title": "Path",
+            "description": "A path relative to the repository root, without `..`."
           },
           "content": {
             "type": "string",
@@ -946,7 +949,9 @@
             "type": "string",
             "maxLength": 500,
             "minLength": 1,
-            "title": "Path"
+            "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+            "title": "Path",
+            "description": "A path relative to the repository root, without `..`."
           },
           "kind": {
             "type": "string",
@@ -993,7 +998,9 @@
             "items": {
               "type": "string",
               "maxLength": 500,
-              "minLength": 1
+              "minLength": 1,
+              "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+              "description": "A path relative to the repository root, without `..`."
             },
             "type": "array",
             "title": "Changed"
@@ -1014,20 +1021,14 @@
             "format": "password",
             "title": "Token",
             "writeOnly": true
-          },
-          "expires_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Expires At"
           }
         },
         "type": "object",
         "required": [
-          "token",
-          "expires_at"
+          "token"
         ],
         "title": "GitToken",
-        "description": "A short-lived GitHub token. The workspace keeps it in memory only."
+        "description": "A short-lived GitHub token. The workspace keeps it in memory only.\n\nIts repr stays masked, but its JSON carries the real value: sending it is the point."
       },
       "HTTPValidationError": {
         "properties": {
@@ -1060,6 +1061,11 @@
           "service"
         ],
         "title": "HealthStatus"
+      },
+      "Line": {
+        "type": "string",
+        "maxLength": 500,
+        "minLength": 1
       },
       "Merge": {
         "properties": {
@@ -1097,7 +1103,9 @@
             "items": {
               "type": "string",
               "maxLength": 500,
-              "minLength": 1
+              "minLength": 1,
+              "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+              "description": "A path relative to the repository root, without `..`."
             },
             "type": "array",
             "title": "Conflicts"
@@ -1115,8 +1123,9 @@
         "properties": {
           "contract_version": {
             "type": "string",
-            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
-            "title": "Contract Version"
+            "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "title": "Contract Version",
+            "description": "The contracts version it was written with. Readers accept 1.x."
           },
           "problem": {
             "type": "string",
@@ -1125,11 +1134,11 @@
             "title": "Problem"
           },
           "users": {
-            "$ref": "#/components/schemas/Sentence"
+            "$ref": "#/components/schemas/Line"
           },
           "examples": {
             "items": {
-              "$ref": "#/components/schemas/Sentence"
+              "$ref": "#/components/schemas/Line"
             },
             "type": "array",
             "maxItems": 3,
@@ -1147,7 +1156,7 @@
           },
           "out_of_scope": {
             "items": {
-              "$ref": "#/components/schemas/Sentence"
+              "$ref": "#/components/schemas/Line"
             },
             "type": "array",
             "title": "Out Of Scope"
@@ -1159,6 +1168,7 @@
             "$ref": "#/components/schemas/ProjectType"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "contract_version",
@@ -1242,6 +1252,31 @@
         ],
         "title": "PushResult"
       },
+      "Readiness": {
+        "properties": {
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ready"
+        ],
+        "title": "Readiness"
+      },
       "RepoName": {
         "type": "string",
         "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$"
@@ -1258,6 +1293,7 @@
             "title": "Name"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "module",
@@ -1305,7 +1341,9 @@
             "type": "string",
             "maxLength": 500,
             "minLength": 1,
+            "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
             "title": "Cwd",
+            "description": "A path relative to the repository root, without `..`.",
             "default": "."
           },
           "timeout_seconds": {
@@ -1321,11 +1359,6 @@
           "argv"
         ],
         "title": "RunCommand"
-      },
-      "Sentence": {
-        "type": "string",
-        "maxLength": 500,
-        "minLength": 1
       },
       "UserId": {
         "type": "string",
@@ -1382,7 +1415,9 @@
             "type": "string",
             "maxLength": 500,
             "minLength": 1,
-            "title": "Path"
+            "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+            "title": "Path",
+            "description": "A path relative to the repository root, without `..`."
           },
           "branch": {
             "$ref": "#/components/schemas/BranchName"
@@ -1402,7 +1437,9 @@
             "type": "string",
             "maxLength": 500,
             "minLength": 1,
-            "title": "Path"
+            "pattern": "^(?!/)(?!(?:.*/)?\\.\\.(?:/|$))[^\\\\\\x00]+$",
+            "title": "Path",
+            "description": "A path relative to the repository root, without `..`."
           },
           "content": {
             "type": "string",

@@ -1,10 +1,11 @@
 """Types shared by the contracts."""
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAliasType, get_args
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints
 
-_SLUG = r"^[a-z]([a-z0-9-]*[a-z0-9])?$"
+SLUG = r"^[a-z]([a-z0-9-]*[a-z0-9])?$"
+"""Lowercase letters, digits and inner hyphens: fits DNS labels and Cloud Run names."""
 
 
 class Contract(BaseModel):
@@ -13,13 +14,23 @@ class Contract(BaseModel):
     model_config = ConfigDict(frozen=True, extra="ignore")
 
 
+class StrictContract(Contract):
+    """For documents people and agents edit by hand (`need.yml`, `app.yaml`): an unknown key is
+    an error, because ignoring a misspelled one could hide data access and lower the tier."""
+
+    model_config = ConfigDict(extra="forbid")
+
+
 # IDs. Slugs fit in DNS labels and Cloud Run names: app names end up in `<app>.lab.<domain>`.
 type UserId = Annotated[str, StringConstraints(pattern=r"^[A-Za-z0-9]{1,64}$")]
 """An Okta user ID."""
-type AppId = Annotated[str, StringConstraints(pattern=_SLUG, max_length=40)]
-type DomainId = Annotated[str, StringConstraints(pattern=_SLUG, max_length=20)]
-type ConnectorId = Annotated[str, StringConstraints(pattern=_SLUG, max_length=63)]
-type SessionId = Annotated[str, StringConstraints(pattern=_SLUG, max_length=32)]
+type AppId = Annotated[str, StringConstraints(pattern=SLUG, max_length=40)]
+type DomainId = Annotated[str, StringConstraints(pattern=SLUG, max_length=20)]
+type ConnectorId = Annotated[str, StringConstraints(pattern=SLUG, max_length=63)]
+type SessionId = Annotated[str, StringConstraints(pattern=SLUG, max_length=32)]
+
+type Line = Annotated[str, StringConstraints(min_length=1, max_length=500)]
+"""One line of plain text, such as an example, a question or a reason."""
 
 type ProjectType = Literal["form-workflow", "dashboard", "chat-assistant", "records", "adk-agent"]
 type Audience = Literal["personal", "team", "domain"]
@@ -61,3 +72,11 @@ class CallContext(Contract):
 class HealthStatus(Contract):
     status: Literal["ok"] = "ok"
     service: str
+
+
+def by_type(union: TypeAliasType) -> dict[str, type[Contract]]:
+    """Each model in a union alias, by the value of its `type` field."""
+    return {
+        get_args(model.model_fields["type"].annotation)[0]: model
+        for model in get_args(union.__value__)
+    }

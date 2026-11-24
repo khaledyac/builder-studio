@@ -9,24 +9,23 @@ from studio.contracts.common import (
     Audience,
     ConnectorId,
     ConnectorIds,
-    Contract,
     DomainId,
+    Line,
     ProjectType,
+    StrictContract,
 )
 from studio.contracts.version import ContractVersion
 
-type Sentence = Annotated[str, StringConstraints(min_length=1, max_length=500)]
 
-
-class Need(Contract):
+class Need(StrictContract):
     contract_version: ContractVersion
     problem: Annotated[str, StringConstraints(min_length=1, max_length=2000)]
-    users: Sentence
-    examples: Annotated[list[Sentence], Field(min_length=2, max_length=3)]
+    users: Line
+    examples: Annotated[list[Line], Field(min_length=2, max_length=3)]
     data: ConnectorIds = Field(default_factory=list[ConnectorId])
     """The connectors the app reads or writes."""
     access: AccessMode
     audience: Audience
-    out_of_scope: list[Sentence] = Field(default_factory=list[Sentence])
+    out_of_scope: list[Line] = Field(default_factory=list[Line])
     domain: DomainId
     project_type: ProjectType

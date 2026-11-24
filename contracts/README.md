@@ -21,7 +21,7 @@ All the generated paths are under `generated/`. The risk tier isn't a contract: 
 
 ## Examples
 
-Each contract has examples in `examples/<contract>/valid/` and `examples/<contract>/invalid/`, as YAML or JSON. An invalid example is named `<field>.<what's wrong>`, for example `examples.only-one.yaml`. The test checks that it fails on that field, not on a typo somewhere else.
+Each contract has examples in `examples/<contract>/valid/` and `examples/<contract>/invalid/`, as YAML or JSON. An invalid example is named `<field>.<what's wrong>`, for example `examples.only-one.yaml`. The test checks that it fails on that field only, not on a typo somewhere else. Every example also runs through the generated schema or OpenAPI, which must agree with the model.
 
 ## Changing a contract
 

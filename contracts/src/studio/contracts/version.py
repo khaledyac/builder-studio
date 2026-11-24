@@ -7,11 +7,14 @@ any version with its own major, and rejects another major (ADR 0002).
 from importlib.metadata import version
 from typing import Annotated
 
-from pydantic import AfterValidator, StringConstraints
+from pydantic import AfterValidator, StringConstraints, WithJsonSchema
 
 CONTRACT_VERSION = version("studio-contracts")
 
-_SEMVER = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
+SEMVER_PATTERN = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$"
+
+type Semver = Annotated[str, StringConstraints(pattern=SEMVER_PATTERN)]
+"""A version like 1.4.2."""
 
 
 def major(semver: str) -> int:
@@ -33,7 +36,17 @@ def _readable(value: str) -> str:
 
 ContractVersion = Annotated[
     str,
-    StringConstraints(pattern=_SEMVER),
+    StringConstraints(pattern=SEMVER_PATTERN),
     AfterValidator(_readable),
+    # Other languages read the generated schema, so it checks the major too.
+    WithJsonSchema(
+        {
+            "type": "string",
+            "pattern": rf"^{CURRENT_MAJOR}\.(0|[1-9]\d*)\.(0|[1-9]\d*)$",
+            "description": (
+                f"The contracts version it was written with. Readers accept {CURRENT_MAJOR}.x."
+            ),
+        }
+    ),
 ]
 """The contracts version a payload was written with. Readers accept their own major."""

@@ -4,13 +4,11 @@ Each one is sent with its `type` as the SSE event name and its `id` as the SSE i
 can resume with `Last-Event-ID`.
 """
 
-from typing import Annotated, Literal, get_args
+from typing import Annotated, Literal
 
 from pydantic import AnyHttpUrl, Field, NonNegativeFloat, NonNegativeInt, StringConstraints
 
-from studio.contracts.common import Contract, RiskTier, SessionState
-
-type Line = Annotated[str, StringConstraints(min_length=1, max_length=500)]
+from studio.contracts.common import Contract, Line, RiskTier, SessionState, by_type
 
 
 class UiEventBase(Contract):
@@ -62,8 +60,5 @@ class Cost(UiEventBase):
 type AnyUiEvent = Message | QuestionCard | SummaryCard | PlanCard | Status | PreviewRefresh | Cost
 type UiEvent = Annotated[AnyUiEvent, Field(discriminator="type")]
 
-UI_EVENTS: dict[str, type[UiEventBase]] = {
-    get_args(model.model_fields["type"].annotation)[0]: model
-    for model in get_args(AnyUiEvent.__value__)
-}
+UI_EVENTS: dict[str, type[Contract]] = by_type(AnyUiEvent)
 """Every UI event model, by its `type`."""

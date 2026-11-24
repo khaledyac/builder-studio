@@ -20,8 +20,10 @@ from studio.contracts.workspace_api import openapi
 
 STAMP = (
     f"Builder Studio contracts {CONTRACT_VERSION}. Generated from studio.contracts: "
-    "edit the Pydantic models, then run `task contracts-gen`."
+    "edit the Pydantic models, then run task contracts-gen."
 )
+TS_BANNER = f"/* {STAMP} */"
+"""The banner `task contracts-gen` puts on the generated TypeScript files."""
 
 
 class _WithoutFieldTitles(GenerateJsonSchema):

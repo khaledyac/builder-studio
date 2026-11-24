@@ -1,4 +1,4 @@
-/* Builder Studio contracts 1.0.0. Generated from the JSON Schemas: edit the Pydantic models, then run task contracts-gen. */
+/* Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen. */
 
 export type UserId = string;
 export type AppId = string;
@@ -7,6 +7,9 @@ export type AgentStepKind = "intake" | "router" | "fast" | "lead" | "worker";
 export type IdempotencyKey = string;
 
 export interface AgentStep {
+  /**
+   * The contracts version it was written with. Readers accept 1.x.
+   */
   contract_version: string;
   context: CallContext;
   kind: AgentStepKind;

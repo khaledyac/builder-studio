@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
   "title": "Event",
   "$defs": {
     "AppId": {
@@ -59,7 +59,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -129,7 +130,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -169,7 +171,8 @@
             "cancelled",
             "skipped",
             "timed_out",
-            "action_required"
+            "action_required",
+            "stale"
           ],
           "type": "string"
         }
@@ -213,7 +216,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -244,8 +248,7 @@
           "$ref": "#/$defs/Environment"
         },
         "version": {
-          "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "type": "string"
+          "$ref": "#/$defs/Semver"
         },
         "outcome": {
           "enum": [
@@ -299,7 +302,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -368,7 +372,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -417,7 +422,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -482,7 +488,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -531,7 +538,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -580,7 +588,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -655,7 +664,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -701,6 +711,10 @@
       "title": "ReviewResultData",
       "type": "object"
     },
+    "Semver": {
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
     "SessionData": {
       "properties": {
         "context": {
@@ -740,7 +754,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -794,7 +809,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -843,7 +859,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -892,7 +909,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {
@@ -967,7 +985,8 @@
           "type": "string"
         },
         "contractversion": {
-          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "description": "The contracts version it was written with. Readers accept 1.x.",
+          "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
           "type": "string"
         },
         "type": {

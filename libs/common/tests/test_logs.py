@@ -71,6 +71,14 @@ def test_only_the_ids_that_are_set_appear(stream: io.StringIO) -> None:
     assert not {"app_id", "session_id"} & event.keys()
 
 
+def test_ids_passed_as_extra_are_included(stream: io.StringIO) -> None:
+    with log_context(user_id="u-1", session_id="s-1"):
+        logging.getLogger("svc").info("override", extra={"session_id": "s-2", "app_id": "a-9"})
+
+    (event,) = events(stream)
+    assert (event["user_id"], event["app_id"], event["session_id"]) == ("u-1", "a-9", "s-2")
+
+
 def test_nested_contexts_merge_and_restore(stream: io.StringIO) -> None:
     log = logging.getLogger("svc")
     with log_context(user_id="u-1"):
@@ -99,6 +107,14 @@ def test_exception_stays_on_the_same_line(stream: io.StringIO) -> None:
     assert event["message"] == "failed"
     assert isinstance(event["exception"], str)
     assert "ValueError: bad input" in event["exception"]
+
+
+def test_stack_info_stays_on_the_same_line(stream: io.StringIO) -> None:
+    logging.getLogger("svc").info("where am I", stack_info=True)
+
+    (event,) = events(stream)
+    assert isinstance(event["stack"], str)
+    assert "Stack (most recent call last)" in event["stack"]
 
 
 def test_configuring_twice_does_not_duplicate_events(stream: io.StringIO) -> None:

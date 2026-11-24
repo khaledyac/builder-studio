@@ -1,0 +1,8 @@
+{
+  "argv": [
+    "uv",
+    "sync"
+  ],
+  "cwd": ".",
+  "timeout_seconds": 600
+}

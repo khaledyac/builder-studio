@@ -6,6 +6,8 @@ requires-python = "==3.14.*"
 members = [
     "builder-studio",
     "studio-common",
+    "studio-contracts",
+    "studio-policy",
 ]
 
 [[package]]
@@ -69,6 +71,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pyright", extra = ["nodejs"] },
     { name = "pytest" },
+    { name = "pyyaml" },
     { name = "ruff" },
 ]
 
@@ -81,6 +84,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.7.0" },
     { name = "pyright", extras = ["nodejs"], specifier = ">=1.1.414" },
     { name = "pytest", specifier = ">=9.2.0" },
+    { name = "pyyaml", specifier = ">=6.0.4" },
     { name = "ruff", specifier = ">=0.17.6" },
 ]
 
@@ -985,6 +989,7 @@ dependencies = [
     { name = "opentelemetry-sdk" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "studio-contracts" },
 ]
 
 [package.metadata]
@@ -996,6 +1001,37 @@ requires-dist = [
     { name = "opentelemetry-sdk", specifier = ">=1.45.2" },
     { name = "pydantic", specifier = ">=2.14.4" },
     { name = "pydantic-settings", specifier = ">=2.16.3" },
+    { name = "studio-contracts", editable = "contracts" },
+]
+
+[[package]]
+name = "studio-contracts"
+version = "1.0.0"
+source = { editable = "contracts" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.165.0" },
+    { name = "pydantic", specifier = ">=2.14.4" },
+]
+
+[[package]]
+name = "studio-policy"
+version = "0.1.0"
+source = { editable = "libs/policy" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "studio-contracts" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.14.4" },
+    { name = "studio-contracts", editable = "contracts" },
 ]
 
 [[package]]

@@ -12,6 +12,7 @@ dev = [
   "pre-commit>=4.7.0",
   "pyright[nodejs]>=1.1.414",
   "pytest>=9.2.0",
+  "pyyaml>=6.0.4", # contract examples
   "ruff>=0.17.6",
 ]
 
@@ -21,8 +22,8 @@ package = false
 required-version = ">=0.13.9"
 
 [tool.uv.workspace]
-# One package per lib, service and job. Step 02 adds `contracts`, step 13 the workspace API.
-members = ["libs/*", "services/*", "jobs/*"]
+# The contracts, plus one package per lib, service and job. Step 13 adds the workspace API.
+members = ["contracts", "libs/*", "services/*", "jobs/*"]
 
 [tool.ruff]
 target-version = "py314"
@@ -73,6 +74,6 @@ venv = ".venv"
 
 [tool.pytest.ini_options]
 # `task test` runs these. `tests/tooling` runs in `task secrets` because it builds gitleaks.
-testpaths = ["libs", "services", "jobs"]
+testpaths = ["contracts", "libs", "services", "jobs"]
 addopts = ["--import-mode=importlib", "-ra", "--strict-markers", "--strict-config"]
 xfail_strict = true

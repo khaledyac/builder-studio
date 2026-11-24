@@ -1,0 +1,7 @@
+{
+  "argv": [
+    "task",
+    "test"
+  ],
+  "cwd": ".worktrees/ticket-3"
+}

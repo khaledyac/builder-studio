@@ -1,0 +1,7 @@
+{
+  "argv": [
+    "task",
+    "test"
+  ],
+  "timeout_seconds": 7200
+}

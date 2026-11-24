@@ -21,7 +21,7 @@ In `infra/terraform/`, with `modules/` and `envs/hub-dev` and `envs/hub-prod`:
 - **Data and messaging:**
   - Firestore in Native mode,
   - Memorystore for Valkey over private connectivity,
-  - Pub/Sub topics from `contracts/v1/events`,
+  - Pub/Sub topics from `contracts/generated/events`,
   - Cloud Tasks queues (`agent-steps`, with rate limits),
   - Cloud Scheduler (its jobs are added by later steps).
 - **Secret Manager:** create the secrets empty; a human sets the values.

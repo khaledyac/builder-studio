@@ -56,7 +56,7 @@ Everything the app repos use lives in a second repository, `builder-kit`, create
 
 - `task dev` starts the local stack. `task dev-down` stops it.
 - `task test`, `task lint`, `task fmt`.
-- `task contracts-check` regenerates the schemas and types from the Pydantic models and fails on any drift.
+- `task contracts-check` regenerates the schemas and types from the Pydantic models and fails on any drift. `task contracts-gen` writes them to `contracts/generated/`.
 - `task tf-validate` runs fmt, validate and the security scan on Terraform.
 - `task setup` installs the dependencies and the git hooks. `task secrets` and `task audit` run the secret scan and the dependency audit, as CI does.
 - `task --list` shows every task.

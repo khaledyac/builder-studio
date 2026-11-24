@@ -15,7 +15,7 @@ In `workspace/`:
   - the kit at its latest version, with every layer's dependencies pre-installed (warm uv and npm caches),
   - the workspace API server,
   - rebuilt by the platform pipeline (step 07) every night and on each kit release.
-- **Workspace API** (FastAPI, implementing `contracts/v1/workspace-api`):
+- **Workspace API** (FastAPI, serving the `studio.contracts.workspace_api` router, which `contracts/generated/workspace-api/openapi.json` documents):
   - runs commands with streamed output and timeouts, with no sudo,
   - reads and writes files inside the repo root only, blocking path traversal,
   - git operations including worktrees, one per worker,

@@ -25,8 +25,9 @@ This installs the Python packages (`uv sync`), the web packages (`npm ci`) and t
 | `task audit` | pip-audit on the locked Python packages, and npm audit (high and critical) |
 | `task web:dev` | the Vite dev server for the UI, with hot reload |
 | `task web:build`, `task web:preview` | build the UI, and serve the build locally |
+| `task contracts-gen` | regenerates the JSON Schemas, the OpenAPI and the TypeScript types from the contracts |
+| `task contracts-check` | checks the contract examples, then fails if the generated files drift from the contracts |
 | `task dev`, `task dev-down` | start and stop the local stack (step 03) |
-| `task contracts-check` | fails when the generated schemas drift from the contracts (step 02) |
 | `task tf-validate` | Terraform fmt, validate and security scan (step 06) |
 
 `task --list` shows them all.
@@ -35,7 +36,8 @@ This installs the Python packages (`uv sync`), the web packages (`npm ci`) and t
 
 The top-level folders follow `AGENTS.md`. Each one arrives with the first step that needs it: `contracts/` in step 02, `infra/` in step 06, `workspace/` in step 13, `services/` from step 14, and `jobs/` in steps 25 and 28.
 
-- **Python:** one uv workspace, with one package per lib, service and job (`libs/*`, `services/*`, `jobs/*`). To add one, create its folder with a `pyproject.toml`, and the workspace picks it up. Libraries share the `studio` namespace, so `libs/common` is imported as `studio.common` ([ADR 0001](adr/0001-monorepo-and-stack.md)).
+- **Contracts:** `contracts/` holds the Pydantic models every service builds against, and the files generated from them. See [Contracts](#contracts).
+- **Python:** one uv workspace, with the contracts and one package per lib, service and job (`libs/*`, `services/*`, `jobs/*`). To add one, create its folder with a `pyproject.toml`, and the workspace picks it up. Libraries share the `studio` namespace, so `libs/common` is imported as `studio.common` ([ADR 0001](adr/0001-monorepo-and-stack.md)).
 - **Web:** the UI lives in `web/`, with its own `Taskfile.yml` that the root one includes as `web:`.
 - **Repo tooling tests:** `tests/tooling/` tests the tooling itself. For now that's the secret-scanner self-test, which `task secrets` runs.
 
@@ -70,6 +72,20 @@ with log_context(user_id="u-1", app_id="a-1", session_id="s-1"):
 - **Settings:** read from environment variables: `SERVICE_NAME`, `ENV` (`local`, `dev` or `prod`) and `LOG_LEVEL`. Secrets come from Secret Manager, never from settings.
 - **Tracing:** when `OTEL_EXPORTER_OTLP_ENDPOINT` holds a collector's base URL, spans go to its `/v1/traces`. When it's unset, nothing is exported. The service's own health check isn't traced.
 - **Health:** `GET /health`. Not `/healthz`, because Cloud Run reserves paths that end in `z`.
+
+## Contracts
+
+The Pydantic models in `contracts/` are the source of truth for `need.yml`, `app.yaml`, registry records, agent steps, events, UI events and the workspace API. `contracts/generated/` holds the JSON Schemas, the OpenAPI and the TypeScript types made from them. Never edit it by hand.
+
+To change a contract, which only a step that says so may do:
+
+1. Change the model in `contracts/src/studio/contracts/`, and add or update its examples in `contracts/examples/`.
+2. Bump the version in `contracts/pyproject.toml`, then run `uv lock`. Bump the minor for an additive change, and the major for a breaking one.
+3. Run `task contracts-gen`, and commit the generated files with the change.
+
+If you forget step 3, `task contracts-check` fails in CI. [ADR 0002](adr/0002-contracts-and-versioning.md) has the rules, including how to ship a breaking change.
+
+The risk tier comes from `studio.policy.tier.decide_tier(app, classifications)`. It follows the table in architecture §8 and fails safe: data with an unknown classification gives tier 3.
 
 ## Git hooks
 

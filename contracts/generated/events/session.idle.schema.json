@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "title": "SessionIdle",
+  "$defs": {
+    "AppId": {
+      "maxLength": 40,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "CallContext": {
+      "description": "The IDs that travel together: every model call, log line and agent step carries them.",
+      "properties": {
+        "user_id": {
+          "$ref": "#/$defs/UserId"
+        },
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "session_id": {
+          "$ref": "#/$defs/SessionId"
+        }
+      },
+      "required": [
+        "user_id",
+        "app_id",
+        "session_id"
+      ],
+      "title": "CallContext",
+      "type": "object"
+    },
+    "SessionData": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/CallContext"
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "title": "SessionData",
+      "type": "object"
+    },
+    "SessionId": {
+      "maxLength": 32,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "UserId": {
+      "pattern": "^[A-Za-z0-9]{1,64}$",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "type": "string"
+    },
+    "source": {
+      "maxLength": 256,
+      "minLength": 1,
+      "type": "string"
+    },
+    "time": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "type": "string"
+    },
+    "contractversion": {
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "type": {
+      "const": "session.idle",
+      "type": "string"
+    },
+    "data": {
+      "$ref": "#/$defs/SessionData"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "time",
+    "contractversion",
+    "type",
+    "data"
+  ],
+  "type": "object"
+}

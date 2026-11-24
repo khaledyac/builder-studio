@@ -1,0 +1,1064 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "title": "Event",
+  "$defs": {
+    "AppId": {
+      "maxLength": 40,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "BranchName": {
+      "pattern": "^[A-Za-z0-9._/-]{1,200}$",
+      "type": "string"
+    },
+    "BudgetData": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/CallContext"
+        },
+        "scope": {
+          "enum": [
+            "session",
+            "user-day"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "context",
+        "scope"
+      ],
+      "title": "BudgetData",
+      "type": "object"
+    },
+    "BudgetExceeded": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "budget.exceeded",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/BudgetData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "BudgetExceeded",
+      "type": "object"
+    },
+    "CallContext": {
+      "description": "The IDs that travel together: every model call, log line and agent step carries them.",
+      "properties": {
+        "user_id": {
+          "$ref": "#/$defs/UserId"
+        },
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "session_id": {
+          "$ref": "#/$defs/SessionId"
+        }
+      },
+      "required": [
+        "user_id",
+        "app_id",
+        "session_id"
+      ],
+      "title": "CallContext",
+      "type": "object"
+    },
+    "CheckCompleted": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "check.completed",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/CheckData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "CheckCompleted",
+      "type": "object"
+    },
+    "CheckData": {
+      "properties": {
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 1,
+          "type": "string"
+        },
+        "conclusion": {
+          "enum": [
+            "success",
+            "failure",
+            "neutral",
+            "cancelled",
+            "skipped",
+            "timed_out",
+            "action_required"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_id",
+        "name",
+        "conclusion"
+      ],
+      "title": "CheckData",
+      "type": "object"
+    },
+    "CommitSha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "DeployCompleted": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "deploy.completed",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/DeployData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "DeployCompleted",
+      "type": "object"
+    },
+    "DeployData": {
+      "properties": {
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "environment": {
+          "$ref": "#/$defs/Environment"
+        },
+        "version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "success",
+            "failure"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_id",
+        "environment",
+        "version",
+        "outcome"
+      ],
+      "title": "DeployData",
+      "type": "object"
+    },
+    "Environment": {
+      "enum": [
+        "lab",
+        "staging",
+        "production"
+      ],
+      "type": "string"
+    },
+    "IntakeConfirmed": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "intake.confirmed",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "IntakeConfirmed",
+      "type": "object"
+    },
+    "MergeData": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/CallContext"
+        },
+        "branch": {
+          "$ref": "#/$defs/BranchName"
+        },
+        "sha": {
+          "$ref": "#/$defs/CommitSha"
+        }
+      },
+      "required": [
+        "context",
+        "branch",
+        "sha"
+      ],
+      "title": "MergeData",
+      "type": "object"
+    },
+    "MergeDone": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "merge.done",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/MergeData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "MergeDone",
+      "type": "object"
+    },
+    "PlanApproved": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "plan.approved",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "PlanApproved",
+      "type": "object"
+    },
+    "PreviewData": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/CallContext"
+        },
+        "sha": {
+          "$ref": "#/$defs/CommitSha"
+        }
+      },
+      "required": [
+        "context",
+        "sha"
+      ],
+      "title": "PreviewData",
+      "type": "object"
+    },
+    "PreviewRefreshed": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "preview.refreshed",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/PreviewData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "PreviewRefreshed",
+      "type": "object"
+    },
+    "PublishRequested": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "publish.requested",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "PublishRequested",
+      "type": "object"
+    },
+    "ReviewCompleted": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "review.completed",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/ReviewResultData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "ReviewCompleted",
+      "type": "object"
+    },
+    "ReviewKind": {
+      "enum": [
+        "domain-owner",
+        "engineer",
+        "security",
+        "dpo",
+        "legal"
+      ],
+      "type": "string"
+    },
+    "ReviewRequestData": {
+      "properties": {
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "review": {
+          "$ref": "#/$defs/ReviewKind"
+        }
+      },
+      "required": [
+        "app_id",
+        "review"
+      ],
+      "title": "ReviewRequestData",
+      "type": "object"
+    },
+    "ReviewRequested": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "review.requested",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/ReviewRequestData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "ReviewRequested",
+      "type": "object"
+    },
+    "ReviewResultData": {
+      "properties": {
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "review": {
+          "$ref": "#/$defs/ReviewKind"
+        },
+        "outcome": {
+          "enum": [
+            "approved",
+            "changes-requested"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_id",
+        "review",
+        "outcome"
+      ],
+      "title": "ReviewResultData",
+      "type": "object"
+    },
+    "SessionData": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/CallContext"
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "title": "SessionData",
+      "type": "object"
+    },
+    "SessionDeleted": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "session.deleted",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "SessionDeleted",
+      "type": "object"
+    },
+    "SessionId": {
+      "maxLength": 32,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "SessionIdle": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "session.idle",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "SessionIdle",
+      "type": "object"
+    },
+    "SessionReady": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "session.ready",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "SessionReady",
+      "type": "object"
+    },
+    "SessionStarted": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "session.started",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/SessionData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "SessionStarted",
+      "type": "object"
+    },
+    "TicketData": {
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/CallContext"
+        },
+        "ticket": {
+          "exclusiveMinimum": 0,
+          "type": "integer"
+        },
+        "state": {
+          "enum": [
+            "open",
+            "in-progress",
+            "done"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "context",
+        "ticket",
+        "state"
+      ],
+      "title": "TicketData",
+      "type": "object"
+    },
+    "TicketUpdated": {
+      "properties": {
+        "specversion": {
+          "const": "1.0",
+          "default": "1.0",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 256,
+          "minLength": 1,
+          "type": "string"
+        },
+        "time": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "datacontenttype": {
+          "const": "application/json",
+          "default": "application/json",
+          "type": "string"
+        },
+        "contractversion": {
+          "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+          "type": "string"
+        },
+        "type": {
+          "const": "ticket.updated",
+          "type": "string"
+        },
+        "data": {
+          "$ref": "#/$defs/TicketData"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "time",
+        "contractversion",
+        "type",
+        "data"
+      ],
+      "title": "TicketUpdated",
+      "type": "object"
+    },
+    "UserId": {
+      "pattern": "^[A-Za-z0-9]{1,64}$",
+      "type": "string"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "budget.exceeded": "#/$defs/BudgetExceeded",
+      "check.completed": "#/$defs/CheckCompleted",
+      "deploy.completed": "#/$defs/DeployCompleted",
+      "intake.confirmed": "#/$defs/IntakeConfirmed",
+      "merge.done": "#/$defs/MergeDone",
+      "plan.approved": "#/$defs/PlanApproved",
+      "preview.refreshed": "#/$defs/PreviewRefreshed",
+      "publish.requested": "#/$defs/PublishRequested",
+      "review.completed": "#/$defs/ReviewCompleted",
+      "review.requested": "#/$defs/ReviewRequested",
+      "session.deleted": "#/$defs/SessionDeleted",
+      "session.idle": "#/$defs/SessionIdle",
+      "session.ready": "#/$defs/SessionReady",
+      "session.started": "#/$defs/SessionStarted",
+      "ticket.updated": "#/$defs/TicketUpdated"
+    },
+    "propertyName": "type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/SessionStarted"
+    },
+    {
+      "$ref": "#/$defs/SessionReady"
+    },
+    {
+      "$ref": "#/$defs/SessionIdle"
+    },
+    {
+      "$ref": "#/$defs/SessionDeleted"
+    },
+    {
+      "$ref": "#/$defs/IntakeConfirmed"
+    },
+    {
+      "$ref": "#/$defs/PlanApproved"
+    },
+    {
+      "$ref": "#/$defs/TicketUpdated"
+    },
+    {
+      "$ref": "#/$defs/MergeDone"
+    },
+    {
+      "$ref": "#/$defs/PreviewRefreshed"
+    },
+    {
+      "$ref": "#/$defs/PublishRequested"
+    },
+    {
+      "$ref": "#/$defs/CheckCompleted"
+    },
+    {
+      "$ref": "#/$defs/DeployCompleted"
+    },
+    {
+      "$ref": "#/$defs/ReviewRequested"
+    },
+    {
+      "$ref": "#/$defs/ReviewCompleted"
+    },
+    {
+      "$ref": "#/$defs/BudgetExceeded"
+    }
+  ]
+}

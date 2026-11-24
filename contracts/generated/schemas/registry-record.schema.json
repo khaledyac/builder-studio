@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run `task contracts-gen`.",
+  "title": "RegistryRecord",
+  "$defs": {
+    "AppId": {
+      "maxLength": 40,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "DomainId": {
+      "maxLength": 20,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "Environment": {
+      "enum": [
+        "lab",
+        "staging",
+        "production"
+      ],
+      "type": "string"
+    },
+    "Environments": {
+      "items": {
+        "$ref": "#/$defs/Environment"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "RegistryStatus": {
+      "enum": [
+        "draft",
+        "live-lab",
+        "live-prod",
+        "expired",
+        "archived"
+      ],
+      "type": "string"
+    },
+    "RepoName": {
+      "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$",
+      "type": "string"
+    },
+    "RiskTier": {
+      "enum": [
+        1,
+        2,
+        3
+      ],
+      "type": "integer"
+    },
+    "UserId": {
+      "pattern": "^[A-Za-z0-9]{1,64}$",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "contract_version": {
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "app_id": {
+      "$ref": "#/$defs/AppId"
+    },
+    "owner": {
+      "$ref": "#/$defs/UserId"
+    },
+    "domain": {
+      "$ref": "#/$defs/DomainId"
+    },
+    "tier": {
+      "$ref": "#/$defs/RiskTier"
+    },
+    "expires_on": {
+      "format": "date",
+      "type": "string"
+    },
+    "repo": {
+      "$ref": "#/$defs/RepoName"
+    },
+    "environments": {
+      "$ref": "#/$defs/Environments"
+    },
+    "status": {
+      "$ref": "#/$defs/RegistryStatus"
+    }
+  },
+  "required": [
+    "contract_version",
+    "app_id",
+    "owner",
+    "domain",
+    "tier",
+    "expires_on",
+    "repo",
+    "status"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,1422 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Workspace API",
+    "description": "Called on a session's workspace by the agent service, the session manager and the preview proxy. Builder Studio contracts.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/commands": {
+      "post": {
+        "summary": "Run Command",
+        "operationId": "run_command",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "One JSON object per line: output lines, then one exit line.",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CommandOutput"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CommandExit"
+                    }
+                  ],
+                  "title": "Response Run Command",
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "output": "#/components/schemas/CommandOutput",
+                      "exit": "#/components/schemas/CommandExit"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/content": {
+      "get": {
+        "summary": "Read File",
+        "operationId": "read_file",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileContent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Write File",
+        "operationId": "write_file",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WriteFile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files": {
+      "get": {
+        "summary": "List Files",
+        "operationId": "list_files",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "default": ".",
+              "title": "Path"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/status": {
+      "get": {
+        "summary": "Git Status",
+        "operationId": "git_status",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GitStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/commits": {
+      "post": {
+        "summary": "Git Commit",
+        "operationId": "git_commit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Commit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/branches": {
+      "post": {
+        "summary": "Git Create Branch",
+        "operationId": "git_create_branch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBranch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/worktrees": {
+      "post": {
+        "summary": "Git Add Worktree",
+        "operationId": "git_add_worktree",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddWorktree"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Worktree"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/worktrees/{name}": {
+      "delete": {
+        "summary": "Git Remove Worktree",
+        "operationId": "git_remove_worktree",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/merges": {
+      "post": {
+        "summary": "Git Merge",
+        "operationId": "git_merge",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Merge"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergeResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/pushes": {
+      "post": {
+        "summary": "Git Push",
+        "operationId": "git_push",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Push"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/git/token": {
+      "put": {
+        "summary": "Git Set Token",
+        "operationId": "git_set_token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GitToken"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/preview/start": {
+      "post": {
+        "summary": "Preview Start",
+        "operationId": "preview_start",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/preview/stop": {
+      "post": {
+        "summary": "Preview Stop",
+        "operationId": "preview_stop",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/preview": {
+      "get": {
+        "summary": "Preview Status",
+        "operationId": "preview_status",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/draft": {
+      "post": {
+        "summary": "Draft",
+        "operationId": "draft",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Draft"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bootstrap": {
+      "post": {
+        "summary": "Bootstrap",
+        "operationId": "bootstrap",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bootstrap"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/restore": {
+      "post": {
+        "summary": "Restore",
+        "operationId": "restore",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Restore"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviewStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccessMode": {
+        "type": "string",
+        "enum": [
+          "read",
+          "write"
+        ]
+      },
+      "AddWorktree": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+            "title": "Name"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "branch"
+        ],
+        "title": "AddWorktree"
+      },
+      "AppId": {
+        "type": "string",
+        "maxLength": 40,
+        "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$"
+      },
+      "AppManifest": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "title": "Contract Version"
+          },
+          "name": {
+            "$ref": "#/components/schemas/AppId"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserId"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/DomainId"
+          },
+          "project_type": {
+            "$ref": "#/components/schemas/ProjectType"
+          },
+          "connectors": {
+            "items": {
+              "$ref": "#/components/schemas/ConnectorUse"
+            },
+            "type": "array",
+            "title": "Connectors"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/Resource"
+            },
+            "type": "array",
+            "title": "Resources"
+          },
+          "audience": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "risk_tier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RiskTier"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true
+          },
+          "expires_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Expires On"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contract_version",
+          "name",
+          "owner",
+          "domain",
+          "project_type",
+          "audience",
+          "expires_on"
+        ],
+        "title": "AppManifest"
+      },
+      "ApprovedModule": {
+        "type": "string",
+        "enum": [
+          "firestore",
+          "cloud-sql",
+          "cloud-storage",
+          "pubsub",
+          "cloud-scheduler"
+        ]
+      },
+      "Audience": {
+        "type": "string",
+        "enum": [
+          "personal",
+          "team",
+          "domain"
+        ]
+      },
+      "Bootstrap": {
+        "properties": {
+          "need": {
+            "$ref": "#/components/schemas/Need"
+          },
+          "app": {
+            "$ref": "#/components/schemas/AppManifest"
+          }
+        },
+        "type": "object",
+        "required": [
+          "need",
+          "app"
+        ],
+        "title": "Bootstrap",
+        "description": "Apply the project type layer with the confirmed answers."
+      },
+      "BranchName": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9._/-]{1,200}$"
+      },
+      "CommandExit": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "exit",
+            "title": "Type"
+          },
+          "exit_code": {
+            "type": "integer",
+            "title": "Exit Code"
+          },
+          "timed_out": {
+            "type": "boolean",
+            "title": "Timed Out"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "exit_code",
+          "timed_out"
+        ],
+        "title": "CommandExit"
+      },
+      "CommandOutput": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "output",
+            "title": "Type"
+          },
+          "stream": {
+            "type": "string",
+            "enum": [
+              "stdout",
+              "stderr"
+            ],
+            "title": "Stream"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "stream",
+          "text"
+        ],
+        "title": "CommandOutput"
+      },
+      "Commit": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "paths": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "maxLength": 500,
+                  "minLength": 1
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paths"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "Commit"
+      },
+      "CommitResult": {
+        "properties": {
+          "sha": {
+            "$ref": "#/components/schemas/CommitSha"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sha"
+        ],
+        "title": "CommitResult"
+      },
+      "CommitSha": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{40}$"
+      },
+      "ConnectorId": {
+        "type": "string",
+        "maxLength": 63,
+        "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$"
+      },
+      "ConnectorIds": {
+        "items": {
+          "$ref": "#/components/schemas/ConnectorId"
+        },
+        "type": "array",
+        "uniqueItems": true
+      },
+      "ConnectorUse": {
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ConnectorId"
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessMode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "access"
+        ],
+        "title": "ConnectorUse"
+      },
+      "CreateBranch": {
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/BranchName"
+          },
+          "start_point": {
+            "$ref": "#/components/schemas/BranchName",
+            "default": "HEAD"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateBranch"
+      },
+      "DomainId": {
+        "type": "string",
+        "maxLength": 20,
+        "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$"
+      },
+      "Draft": {
+        "properties": {
+          "domain": {
+            "$ref": "#/components/schemas/DomainId"
+          }
+        },
+        "type": "object",
+        "required": [
+          "domain"
+        ],
+        "title": "Draft",
+        "description": "Render a draft from the base and domain layers while the intake runs."
+      },
+      "FileContent": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Path"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "content"
+        ],
+        "title": "FileContent"
+      },
+      "FileEntry": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Path"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "file",
+              "directory"
+            ],
+            "title": "Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "kind"
+        ],
+        "title": "FileEntry"
+      },
+      "FileList": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/FileEntry"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entries"
+        ],
+        "title": "FileList"
+      },
+      "GitStatus": {
+        "properties": {
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          },
+          "clean": {
+            "type": "boolean",
+            "title": "Clean"
+          },
+          "changed": {
+            "items": {
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Changed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "branch",
+          "clean",
+          "changed"
+        ],
+        "title": "GitStatus"
+      },
+      "GitToken": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "format": "password",
+            "title": "Token",
+            "writeOnly": true
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "expires_at"
+        ],
+        "title": "GitToken",
+        "description": "A short-lived GitHub token. The workspace keeps it in memory only."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status",
+            "default": "ok"
+          },
+          "service": {
+            "type": "string",
+            "title": "Service"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service"
+        ],
+        "title": "HealthStatus"
+      },
+      "Merge": {
+        "properties": {
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          },
+          "into": {
+            "$ref": "#/components/schemas/BranchName"
+          }
+        },
+        "type": "object",
+        "required": [
+          "branch",
+          "into"
+        ],
+        "title": "Merge"
+      },
+      "MergeResult": {
+        "properties": {
+          "merged": {
+            "type": "boolean",
+            "title": "Merged"
+          },
+          "sha": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommitSha"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conflicts": {
+            "items": {
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Conflicts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merged",
+          "sha",
+          "conflicts"
+        ],
+        "title": "MergeResult"
+      },
+      "Need": {
+        "properties": {
+          "contract_version": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+            "title": "Contract Version"
+          },
+          "problem": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Problem"
+          },
+          "users": {
+            "$ref": "#/components/schemas/Sentence"
+          },
+          "examples": {
+            "items": {
+              "$ref": "#/components/schemas/Sentence"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 2,
+            "title": "Examples"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConnectorIds"
+          },
+          "access": {
+            "$ref": "#/components/schemas/AccessMode"
+          },
+          "audience": {
+            "$ref": "#/components/schemas/Audience"
+          },
+          "out_of_scope": {
+            "items": {
+              "$ref": "#/components/schemas/Sentence"
+            },
+            "type": "array",
+            "title": "Out Of Scope"
+          },
+          "domain": {
+            "$ref": "#/components/schemas/DomainId"
+          },
+          "project_type": {
+            "$ref": "#/components/schemas/ProjectType"
+          }
+        },
+        "type": "object",
+        "required": [
+          "contract_version",
+          "problem",
+          "users",
+          "examples",
+          "access",
+          "audience",
+          "domain",
+          "project_type"
+        ],
+        "title": "Need"
+      },
+      "PreviewStatus": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "starting",
+              "running",
+              "stopped",
+              "failed"
+            ],
+            "title": "State"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "state"
+        ],
+        "title": "PreviewStatus"
+      },
+      "ProjectType": {
+        "type": "string",
+        "enum": [
+          "form-workflow",
+          "dashboard",
+          "chat-assistant",
+          "records",
+          "adk-agent"
+        ]
+      },
+      "Push": {
+        "properties": {
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          }
+        },
+        "type": "object",
+        "required": [
+          "branch"
+        ],
+        "title": "Push"
+      },
+      "PushResult": {
+        "properties": {
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          },
+          "sha": {
+            "$ref": "#/components/schemas/CommitSha"
+          }
+        },
+        "type": "object",
+        "required": [
+          "branch",
+          "sha"
+        ],
+        "title": "PushResult"
+      },
+      "RepoName": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$"
+      },
+      "Resource": {
+        "properties": {
+          "module": {
+            "$ref": "#/components/schemas/ApprovedModule"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 40,
+            "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "module",
+          "name"
+        ],
+        "title": "Resource"
+      },
+      "Restore": {
+        "properties": {
+          "repo": {
+            "$ref": "#/components/schemas/RepoName"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repo",
+          "branch"
+        ],
+        "title": "Restore",
+        "description": "Rebuild the working copy from the app's build branch."
+      },
+      "RiskTier": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3
+        ]
+      },
+      "RunCommand": {
+        "properties": {
+          "argv": {
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Argv"
+          },
+          "cwd": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Cwd",
+            "default": "."
+          },
+          "timeout_seconds": {
+            "type": "integer",
+            "maximum": 1800.0,
+            "minimum": 1.0,
+            "title": "Timeout Seconds",
+            "default": 300
+          }
+        },
+        "type": "object",
+        "required": [
+          "argv"
+        ],
+        "title": "RunCommand"
+      },
+      "Sentence": {
+        "type": "string",
+        "maxLength": 500,
+        "minLength": 1
+      },
+      "UserId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9]{1,64}$"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Worktree": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+            "title": "Name"
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Path"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/BranchName"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "path",
+          "branch"
+        ],
+        "title": "Worktree"
+      },
+      "WriteFile": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Path"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 1000000,
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "content"
+        ],
+        "title": "WriteFile"
+      }
+    }
+  }
+}

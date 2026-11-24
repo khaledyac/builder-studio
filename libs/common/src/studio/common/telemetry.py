@@ -34,9 +34,11 @@ def build_tracer_provider(settings: ServiceSettings) -> TracerProvider:
 
 
 def instrument_app(app: FastAPI, provider: TracerProvider) -> None:
-    """Trace every request to `app`, except health checks."""
+    """Trace every request to `app`, except the service's own health check."""
+    # OpenTelemetry matches this against the full URL (scheme, host and path, no query),
+    # so anchor it to the root path: /apps/health is still traced.
     FastAPIInstrumentor.instrument_app(
-        app, tracer_provider=provider, excluded_urls=f"{HEALTH_PATH}$"
+        app, tracer_provider=provider, excluded_urls=f"^https?://[^/]+{HEALTH_PATH}$"
     )
 
 

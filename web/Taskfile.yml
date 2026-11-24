@@ -1,0 +1,44 @@
+# Web UI tasks. The root Taskfile includes this one as `web:`.
+version: "3"
+
+tasks:
+  install:
+    desc: Install the web dependencies from package-lock.json
+    run: once
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/.package-lock.json
+    cmds:
+      - npm ci --no-audit --no-fund
+
+  lint:
+    desc: Lint and type-check the web code
+    deps: [install]
+    cmds:
+      - npm run lint
+      - npm run typecheck
+
+  fmt:
+    desc: Auto-fix the web code
+    deps: [install]
+    cmds:
+      - npm run lint -- --fix
+
+  test:
+    desc: Run the web tests
+    deps: [install]
+    cmds:
+      - npm test
+
+  build:
+    desc: Build the web app
+    deps: [install]
+    cmds:
+      - npm run build
+
+  audit:
+    desc: Check the npm dependencies for known high or critical vulnerabilities
+    cmds:
+      - npm audit --audit-level=high

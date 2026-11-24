@@ -1,29 +1,17 @@
-<!-- Title: `NN · <step title>`, for example `01 · Platform monorepo and conventions`. -->
+<!--
+Title: `NN · <step title>`, for example `01 · Platform monorepo and conventions`.
+After the acceptance criteria, add the `pr` skill's sections: Summary, Evidence and Merge Danger.
+-->
 
 ## Step
 
-[NN · Step title](docs/plan/steps/NN-step.md)
+NN · step title, from `docs/plan/steps/NN-<name>.md`
 
 ## Acceptance criteria
 
 Each criterion from the step, how it's met, and the evidence.
 
-- [ ] Criterion: how it's met. Evidence: test, command output or screenshot.
-
-## Summary
-
-<diagram, diff-sketch, or tree>
-
-## Evidence
-
-- **Before:** <screenshot/output/failing test run>
-  **After:** <screenshot/output/passing test run>
-
-## Merge Danger
-
-**Door:** <one-way or two-way>
-
-**Blast Radius:** <one-word description>
+- [ ] Criterion: how it's met. Evidence: a test, command output or a screenshot.
 
 ## Follow-ups
 

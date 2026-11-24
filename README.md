@@ -14,7 +14,7 @@ task setup
 task lint test
 ```
 
-`task setup` installs the dependencies and the git hooks. `task lint test` runs what CI runs. `task --list` shows every command, and [docs/dev.md](docs/dev.md) explains them.
+`task setup` installs the dependencies and the git hooks. `task lint test` runs the lint, type and test checks from CI. `task --list` shows every command, and [docs/dev.md](docs/dev.md) explains them, including the secret scan and the dependency audit that CI also runs.
 
 ## Where things are
 

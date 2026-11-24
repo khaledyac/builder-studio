@@ -72,6 +72,17 @@ def test_history_scan_rejects_a_committed_secret(repo: Path) -> None:
     assert "leaks found" in result.stdout
 
 
+def test_history_scan_ignores_other_branches(repo: Path) -> None:
+    git(repo, "switch", "--quiet", "--create", "other")
+    add_secret(repo)
+    git(repo, "commit", "--quiet", "--no-verify", "--message", "feat: add settings")
+    git(repo, "switch", "--quiet", "-")
+
+    result = run_hook(repo, "gitleaks-history", "--hook-stage", "manual")
+
+    assert result.returncode == 0, result.stdout
+
+
 def test_history_scan_passes_a_clean_repository(repo: Path) -> None:
     result = run_hook(repo, "gitleaks-history", "--hook-stage", "manual")
 

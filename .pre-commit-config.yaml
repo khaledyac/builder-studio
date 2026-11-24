@@ -28,14 +28,17 @@ repos:
         pass_filenames: false
       - id: terraform-fmt
         name: terraform fmt
+        # Keep in step with terraform in mise.toml.
         entry: hashicorp/terraform:1.17.2 fmt -recursive
         language: docker_image
         files: \.(tf|tfvars)$
         pass_filenames: false
-      # Whole-history scan for `task secrets` and CI. Not run on commit.
+      # Scans every commit in the current branch's history, for `task secrets` and CI.
+      # Other branches are left out, so a leak elsewhere can't fail an unrelated PR.
+      # Not run on commit.
       - id: gitleaks-history
         name: gitleaks (whole git history)
-        entry: gitleaks git --redact --verbose
+        entry: gitleaks git --redact --verbose --log-opts=HEAD
         language: golang
         additional_dependencies: [github.com/zricethezav/gitleaks/v8@v8.30.1]
         pass_filenames: false

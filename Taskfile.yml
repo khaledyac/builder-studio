@@ -63,10 +63,32 @@ tasks:
       - "{{.UV_RUN}} pytest"
       - task: web:test
 
-  contracts-check:
-    desc: Regenerate the schemas and types from the Pydantic contracts and fail on drift
+  contracts-gen:
+    desc: Regenerate the JSON Schemas, OpenAPI and TypeScript types from the Pydantic contracts
+    deps: [install]
+    vars:
+      OUT: '{{.OUT | default "contracts/generated"}}'
+      BANNER:
+        sh: '{{.UV_RUN}} python -c "from studio.contracts.export import TS_BANNER; print(TS_BANNER)"'
     cmds:
-      - echo "No contracts yet. Step 02 adds them."
+      - rm -rf {{.OUT}}
+      - "{{.UV_RUN}} python -m studio.contracts.export {{.OUT}}"
+      - >-
+        web/node_modules/.bin/json2ts --input {{.OUT}}/schemas --output {{.OUT}}/ts
+        --no-additionalProperties --unknownAny --bannerComment "{{.BANNER}}"
+      - web/node_modules/.bin/tsc --noEmit --strict {{.OUT}}/ts/*.ts
+
+  contracts-check:
+    desc: Check the contract examples, then fail if the generated files drift from the Pydantic models
+    deps: [install]
+    cmds:
+      - "{{.UV_RUN}} pytest contracts/tests/test_examples.py -q"
+      - task: contracts-gen
+        vars:
+          OUT: .task/contracts
+      - >-
+        diff -r contracts/generated .task/contracts
+        || (echo "The generated contract files are out of date: run task contracts-gen and commit the result." && exit 1)
 
   tf-validate:
     desc: Run fmt, validate and the security scan on the Terraform

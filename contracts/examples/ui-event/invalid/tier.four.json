@@ -1,0 +1,12 @@
+{
+  "id": "43",
+  "type": "summary-card",
+  "summary": [
+    "A request form for store managers",
+    "Reads stores, never writes"
+  ],
+  "tier": 4,
+  "tier_reasons": [
+    "Shared with your team, so the Domain Owner approves production."
+  ]
+}

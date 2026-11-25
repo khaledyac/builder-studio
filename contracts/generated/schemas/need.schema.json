@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
+  "title": "Need",
+  "$defs": {
+    "AccessMode": {
+      "enum": [
+        "read",
+        "write"
+      ],
+      "type": "string"
+    },
+    "Audience": {
+      "enum": [
+        "personal",
+        "team",
+        "domain"
+      ],
+      "type": "string"
+    },
+    "ConnectorId": {
+      "maxLength": 63,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "ConnectorIds": {
+      "items": {
+        "$ref": "#/$defs/ConnectorId"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "DomainId": {
+      "maxLength": 20,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "Line": {
+      "maxLength": 500,
+      "minLength": 1,
+      "type": "string"
+    },
+    "ProjectType": {
+      "enum": [
+        "form-workflow",
+        "dashboard",
+        "chat-assistant",
+        "records",
+        "adk-agent"
+      ],
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "description": "The contracts version it was written with. Readers accept 1.x.",
+      "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "problem": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "type": "string"
+    },
+    "users": {
+      "$ref": "#/$defs/Line"
+    },
+    "examples": {
+      "items": {
+        "$ref": "#/$defs/Line"
+      },
+      "maxItems": 3,
+      "minItems": 2,
+      "type": "array"
+    },
+    "data": {
+      "$ref": "#/$defs/ConnectorIds"
+    },
+    "access": {
+      "$ref": "#/$defs/AccessMode"
+    },
+    "audience": {
+      "$ref": "#/$defs/Audience"
+    },
+    "out_of_scope": {
+      "items": {
+        "$ref": "#/$defs/Line"
+      },
+      "type": "array"
+    },
+    "domain": {
+      "$ref": "#/$defs/DomainId"
+    },
+    "project_type": {
+      "$ref": "#/$defs/ProjectType"
+    }
+  },
+  "required": [
+    "contract_version",
+    "problem",
+    "users",
+    "examples",
+    "access",
+    "audience",
+    "domain",
+    "project_type"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,15 @@
+{
+  "contract_version": "1.0.0",
+  "app_id": "staff-requests",
+  "owner": "00u1a2b3c4D5E6F7g8h9",
+  "domain": "retail",
+  "tier": 2,
+  "expires_on": "2027-06-30",
+  "repo": "builder-apps/staff-requests",
+  "environments": [
+    "lab",
+    "staging",
+    "production"
+  ],
+  "status": "live-prod"
+}

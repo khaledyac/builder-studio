@@ -1,0 +1,10 @@
+# `connector` instead of `connectors`: ignoring it would hide the app's data access.
+contract_version: 1.0.0
+owner: 00u1a2b3c4D5E6F7g8h9
+domain: retail
+project_type: form-workflow
+audience: team
+expires_on: 2027-06-30
+name: staff-requests
+connector:
+  clients-readonly: read

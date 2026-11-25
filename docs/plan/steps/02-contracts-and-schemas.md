@@ -8,7 +8,7 @@ The hub services, the workspace, the templates and the pipelines are built in pa
 
 ## Build
 
-In `contracts/v1/`, written as **Pydantic v2 models**, which are the source of truth. JSON Schema is exported from them, the workspace API's OpenAPI comes from a FastAPI router built on the same models, and the TypeScript types for `web/` are generated from those files. Each contract has examples:
+In `contracts/`, written as **Pydantic v2 models**, which are the source of truth. The version is a value, not a folder (ADR 0002). JSON Schema is exported from them, the workspace API's OpenAPI comes from a FastAPI router built on the same models, and the TypeScript types for `web/` are generated from those files. Each contract has examples:
 
 - **`need.yml`:** problem, users, 2–3 examples, data (connector IDs), read or write, audience, out of scope, domain, project type.
 - **`app.yaml`:** app name, owner (Okta ID), domain, project type, connectors with access mode, resources from approved modules, audience, risk tier (computed, read-only), expiry.

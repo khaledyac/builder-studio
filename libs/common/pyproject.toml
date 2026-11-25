@@ -11,7 +11,11 @@ dependencies = [
   "opentelemetry-sdk>=1.45.2",
   "pydantic>=2.14.4",
   "pydantic-settings>=2.16.3",
+  "studio-contracts",
 ]
+
+[tool.uv.sources]
+studio-contracts = { workspace = true }
 
 [build-system]
 requires = ["uv_build>=0.13.9,<0.14"]

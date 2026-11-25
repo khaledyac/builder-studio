@@ -1,0 +1,13 @@
+{
+  "specversion": "1.0",
+  "id": "evt-0014",
+  "source": "/services/webhook-receiver",
+  "type": "review.completed",
+  "time": "2026-11-24T10:00:00Z",
+  "contractversion": "1.0.0",
+  "data": {
+    "app_id": "staff-requests",
+    "review": "domain-owner",
+    "outcome": "approved"
+  }
+}

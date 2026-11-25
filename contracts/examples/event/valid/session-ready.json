@@ -1,0 +1,15 @@
+{
+  "specversion": "1.0",
+  "id": "evt-0003",
+  "source": "/services/session-manager",
+  "type": "session.ready",
+  "time": "2026-11-24T10:00:00Z",
+  "contractversion": "1.0.0",
+  "data": {
+    "context": {
+      "user_id": "00u1a2b3c4D5E6F7g8h9",
+      "app_id": "staff-requests",
+      "session_id": "s-7f3a9c"
+    }
+  }
+}

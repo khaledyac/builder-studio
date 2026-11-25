@@ -1,0 +1,290 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
+  "title": "UiEvent",
+  "$defs": {
+    "Cost": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "cost",
+          "type": "string"
+        },
+        "tokens": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "cost_usd": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "tokens",
+        "cost_usd"
+      ],
+      "title": "Cost",
+      "type": "object"
+    },
+    "Line": {
+      "maxLength": 500,
+      "minLength": 1,
+      "type": "string"
+    },
+    "Message": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "message",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "builder",
+            "agent"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "role",
+        "text"
+      ],
+      "title": "Message",
+      "type": "object"
+    },
+    "PlanCard": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "plan-card",
+          "type": "string"
+        },
+        "summary": {
+          "$ref": "#/$defs/Line"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/Line"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "summary",
+        "steps"
+      ],
+      "title": "PlanCard",
+      "type": "object"
+    },
+    "PreviewRefresh": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "preview-refresh",
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "url"
+      ],
+      "title": "PreviewRefresh",
+      "type": "object"
+    },
+    "QuestionCard": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "question-card",
+          "type": "string"
+        },
+        "question": {
+          "$ref": "#/$defs/Line"
+        },
+        "suggested_answers": {
+          "items": {
+            "$ref": "#/$defs/Line"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "question",
+        "suggested_answers"
+      ],
+      "title": "QuestionCard",
+      "type": "object"
+    },
+    "RiskTier": {
+      "enum": [
+        1,
+        2,
+        3
+      ],
+      "type": "integer"
+    },
+    "SessionState": {
+      "enum": [
+        "starting",
+        "ready",
+        "building",
+        "idle",
+        "rebuilding",
+        "deleted"
+      ],
+      "type": "string"
+    },
+    "Status": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "status",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/SessionState"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Line"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "state"
+      ],
+      "title": "Status",
+      "type": "object"
+    },
+    "SummaryCard": {
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": {
+          "const": "summary-card",
+          "type": "string"
+        },
+        "summary": {
+          "items": {
+            "$ref": "#/$defs/Line"
+          },
+          "maxItems": 12,
+          "minItems": 1,
+          "type": "array"
+        },
+        "tier": {
+          "$ref": "#/$defs/RiskTier"
+        },
+        "tier_reasons": {
+          "items": {
+            "$ref": "#/$defs/Line"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "summary",
+        "tier",
+        "tier_reasons"
+      ],
+      "title": "SummaryCard",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "cost": "#/$defs/Cost",
+      "message": "#/$defs/Message",
+      "plan-card": "#/$defs/PlanCard",
+      "preview-refresh": "#/$defs/PreviewRefresh",
+      "question-card": "#/$defs/QuestionCard",
+      "status": "#/$defs/Status",
+      "summary-card": "#/$defs/SummaryCard"
+    },
+    "propertyName": "type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/Message"
+    },
+    {
+      "$ref": "#/$defs/QuestionCard"
+    },
+    {
+      "$ref": "#/$defs/SummaryCard"
+    },
+    {
+      "$ref": "#/$defs/PlanCard"
+    },
+    {
+      "$ref": "#/$defs/Status"
+    },
+    {
+      "$ref": "#/$defs/PreviewRefresh"
+    },
+    {
+      "$ref": "#/$defs/Cost"
+    }
+  ]
+}

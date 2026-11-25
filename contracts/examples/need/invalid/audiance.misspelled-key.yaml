@@ -1,0 +1,16 @@
+# A misspelled key is an error, not something to ignore.
+contract_version: 1.0.0
+problem: Store managers track staff requests in a shared spreadsheet that nobody keeps up to date.
+users: Store managers in the Retail domain.
+examples:
+  - A manager logs a request for extra staff on Saturday.
+  - A regional lead sees every open request in their region.
+data:
+  - stores-readonly
+access: read
+audience: team
+audiance: domain
+out_of_scope:
+  - Approving requests in the HR system.
+domain: retail
+project_type: form-workflow

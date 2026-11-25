@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
+  "title": "ReviewCompleted",
+  "$defs": {
+    "AppId": {
+      "maxLength": 40,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "ReviewKind": {
+      "enum": [
+        "domain-owner",
+        "engineer",
+        "security",
+        "dpo",
+        "legal"
+      ],
+      "type": "string"
+    },
+    "ReviewResultData": {
+      "properties": {
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "review": {
+          "$ref": "#/$defs/ReviewKind"
+        },
+        "outcome": {
+          "enum": [
+            "approved",
+            "changes-requested"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_id",
+        "review",
+        "outcome"
+      ],
+      "title": "ReviewResultData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "type": "string"
+    },
+    "source": {
+      "maxLength": 256,
+      "minLength": 1,
+      "type": "string"
+    },
+    "time": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "type": "string"
+    },
+    "contractversion": {
+      "description": "The contracts version it was written with. Readers accept 1.x.",
+      "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "type": {
+      "const": "review.completed",
+      "type": "string"
+    },
+    "data": {
+      "$ref": "#/$defs/ReviewResultData"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "time",
+    "contractversion",
+    "type",
+    "data"
+  ],
+  "type": "object"
+}

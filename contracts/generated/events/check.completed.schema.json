@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
+  "title": "CheckCompleted",
+  "$defs": {
+    "AppId": {
+      "maxLength": 40,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "CheckData": {
+      "properties": {
+        "app_id": {
+          "$ref": "#/$defs/AppId"
+        },
+        "name": {
+          "maxLength": 100,
+          "minLength": 1,
+          "type": "string"
+        },
+        "conclusion": {
+          "enum": [
+            "success",
+            "failure",
+            "neutral",
+            "cancelled",
+            "skipped",
+            "timed_out",
+            "action_required",
+            "stale"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_id",
+        "name",
+        "conclusion"
+      ],
+      "title": "CheckData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "type": "string"
+    },
+    "source": {
+      "maxLength": 256,
+      "minLength": 1,
+      "type": "string"
+    },
+    "time": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "type": "string"
+    },
+    "contractversion": {
+      "description": "The contracts version it was written with. Readers accept 1.x.",
+      "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "type": {
+      "const": "check.completed",
+      "type": "string"
+    },
+    "data": {
+      "$ref": "#/$defs/CheckData"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "time",
+    "contractversion",
+    "type",
+    "data"
+  ],
+  "type": "object"
+}

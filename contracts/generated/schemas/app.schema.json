@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Builder Studio contracts 1.0.0. Generated from studio.contracts: edit the Pydantic models, then run task contracts-gen.",
+  "title": "AppManifest",
+  "$defs": {
+    "AccessMode": {
+      "enum": [
+        "read",
+        "write"
+      ],
+      "type": "string"
+    },
+    "AppId": {
+      "maxLength": 40,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "ApprovedModule": {
+      "enum": [
+        "firestore",
+        "cloud-sql",
+        "cloud-storage",
+        "pubsub",
+        "cloud-scheduler"
+      ],
+      "type": "string"
+    },
+    "Audience": {
+      "enum": [
+        "personal",
+        "team",
+        "domain"
+      ],
+      "type": "string"
+    },
+    "ConnectorId": {
+      "maxLength": 63,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "DomainId": {
+      "maxLength": 20,
+      "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+      "type": "string"
+    },
+    "ProjectType": {
+      "enum": [
+        "form-workflow",
+        "dashboard",
+        "chat-assistant",
+        "records",
+        "adk-agent"
+      ],
+      "type": "string"
+    },
+    "Resource": {
+      "additionalProperties": false,
+      "properties": {
+        "module": {
+          "$ref": "#/$defs/ApprovedModule"
+        },
+        "name": {
+          "maxLength": 40,
+          "pattern": "^[a-z]([a-z0-9-]*[a-z0-9])?$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "module",
+        "name"
+      ],
+      "title": "Resource",
+      "type": "object"
+    },
+    "RiskTier": {
+      "enum": [
+        1,
+        2,
+        3
+      ],
+      "type": "integer"
+    },
+    "UserId": {
+      "pattern": "^[A-Za-z0-9]{1,64}$",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "description": "The contracts version it was written with. Readers accept 1.x.",
+      "pattern": "^1\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "type": "string"
+    },
+    "name": {
+      "$ref": "#/$defs/AppId"
+    },
+    "owner": {
+      "$ref": "#/$defs/UserId"
+    },
+    "domain": {
+      "$ref": "#/$defs/DomainId"
+    },
+    "project_type": {
+      "$ref": "#/$defs/ProjectType"
+    },
+    "connectors": {
+      "additionalProperties": {
+        "$ref": "#/$defs/AccessMode"
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/ConnectorId"
+      },
+      "type": "object"
+    },
+    "resources": {
+      "items": {
+        "$ref": "#/$defs/Resource"
+      },
+      "type": "array"
+    },
+    "audience": {
+      "$ref": "#/$defs/Audience"
+    },
+    "risk_tier": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RiskTier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "readOnly": true
+    },
+    "expires_on": {
+      "format": "date",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract_version",
+    "name",
+    "owner",
+    "domain",
+    "project_type",
+    "audience",
+    "expires_on"
+  ],
+  "type": "object"
+}
